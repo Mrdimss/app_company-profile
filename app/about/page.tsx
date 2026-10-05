@@ -1,130 +1,265 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+function Reveal({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(element);
+        }
+      },
+      {
+        threshold: 0.15,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`${className} transition-all duration-700 ease-out ${
+        isVisible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-10 opacity-0"
+      }`}
+      style={{
+        transitionDelay: `${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function AboutPage() {
   return (
     <main>
-      {/* Hero */}
-      <section className="px-8 py-24 md:px-16 md:py-32 lg:px-24">
+      {/* ================= HERO ================= */}
+      <section className="px-8 py-20 md:px-16 md:py-28 lg:px-24">
         <div className="mx-auto max-w-7xl">
-          <p className="mb-6 text-sm uppercase tracking-[0.3em] text-gray-500">
-            About Us
-          </p>
 
-          <h1 className="max-w-6xl text-5xl font-medium leading-[1] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
-            We believe good ideas can create meaningful change.
-          </h1>
+          <Reveal>
+            <p className="mb-6 text-sm uppercase tracking-[0.3em] text-gray-500">
+              About Us
+            </p>
+          </Reveal>
+
+          <Reveal delay={150}>
+            <h1 className="max-w-6xl text-5xl font-medium leading-[1] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl">
+              About Girik
+            </h1>
+          </Reveal>
+
+          <Reveal delay={300}>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-gray-600">
+              Trade & Distributor Company
+            </p>
+          </Reveal>
+
         </div>
       </section>
 
-      {/* Story */}
-      <section className="bg-neutral-100 px-8 py-24 md:px-16 lg:px-24">
+
+      {/* ================= ABOUT / STORY ================= */}
+      <section className="bg-neutral-100 px-8 py-16 md:px-16 lg:px-24">
         <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-2 md:items-start">
-          
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-gray-500">
-              Our Story
-            </p>
-          </div>
 
-          <div className="max-w-2xl">
-            <p className="text-2xl leading-relaxed tracking-tight md:text-3xl">
-              We started with a simple idea: creating digital solutions
-              that are not only visually appealing, but also useful and
-              meaningful for the people who use them.
-            </p>
+          {/* IMAGE */}
+          <Reveal>
+            <div className="overflow-hidden rounded-2xl shadow-sm">
+              <img
+                src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1400&q=80"
+                alt="Container ship"
+                className="h-[340px] w-full object-cover md:h-[520px]"
+              />
+            </div>
+          </Reveal>
 
-            <p className="mt-8 leading-relaxed text-gray-600">
-              Our approach combines creativity, technology, and an
-              understanding of business needs. We believe that every
-              project has its own story, challenges, and opportunities.
-            </p>
 
-            <p className="mt-6 leading-relaxed text-gray-600">
-              That's why we work closely with our clients from the early
-              stages of an idea until the final solution is delivered.
-            </p>
-          </div>
+          {/* TEXT */}
+          <Reveal delay={150}>
+            <div className="max-w-xl">
+
+              <p className="text-sm uppercase tracking-[0.3em] text-gray-500">
+                About Us
+              </p>
+
+              <h2 className="mt-4 text-4xl font-medium tracking-tight md:text-5xl">
+                About Girik
+              </h2>
+
+              <p className="mt-6 leading-relaxed text-gray-700">
+                PT Dunia Sports Interprises is a trading and distribution
+                company based in Jakarta, Indonesia. The company focuses on
+                providing and selling a wide range of products, particularly
+                sports equipment, to meet market needs through various
+                marketing and distribution channels, including direct sales
+                and e-commerce.
+              </p>
+
+              <p className="mt-6 leading-relaxed text-gray-700">
+                The company's business operations are supported by various
+                activities, including merchandising, marketing, trade
+                marketing, logistics, delivery, import, warehouse management,
+                and customer services. In addition to sports products, PT
+                Dunia Sports Interprises also distributes consumer goods such
+                as personal care, skincare and body care, herbal wellness,
+                and food products.
+              </p>
+
+              <p className="mt-6 leading-relaxed text-gray-700">
+                Supported by networks across modern markets, general trade,
+                and e-commerce, PT Dunia Sports Interprises continues to
+                develop its trading and distribution operations in an
+                organized manner to provide products and services that meet
+                customer needs.
+              </p>
+
+            </div>
+          </Reveal>
 
         </div>
       </section>
 
-      {/* Values */}
-      <section className="px-8 py-24 md:px-16 lg:px-24">
+
+      {/* ================= OUR GOAL ================= */}
+      <section className="px-8 py-20 md:px-16 lg:px-24">
         <div className="mx-auto max-w-7xl">
 
-          <div className="mb-16">
-            <p className="mb-4 text-sm uppercase tracking-[0.3em] text-gray-500">
-              Our Values
-            </p>
+          {/* TITLE */}
+          <Reveal>
+            <div className="mb-16">
 
-            <h2 className="max-w-3xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
-              Principles that guide the way we work.
+              <p className="mb-4 text-sm uppercase tracking-[0.3em] text-gray-500">
+                Our Goal
+              </p>
+
+              <h2 className="max-w-3xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
+                Driving the Future of Global Commerce
+              </h2>
+
+            </div>
+          </Reveal>
+
+
+          <div className="border-t border-black/10 pt-8">
+
+            <div className="grid gap-8 md:grid-cols-3">
+
+              {/* ================= VISION ================= */}
+              <Reveal delay={0}>
+                <div className="rounded-2xl border border-black/10 bg-white p-6 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+
+                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-neutral-100">
+                    ✅
+                  </div>
+
+                  <h3 className="mt-5 text-2xl font-medium">
+                    Our Vision
+                  </h3>
+
+                  <p className="mt-4 leading-relaxed text-gray-600">
+                    To become one of the world’s most trusted partners who
+                    helps businesses grow with confidence.
+                  </p>
+
+                </div>
+              </Reveal>
+
+
+              {/* ================= MISSION ================= */}
+              <Reveal delay={150}>
+                <div className="rounded-2xl border border-black/10 bg-white p-6 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+
+                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-neutral-100">
+                    ✅
+                  </div>
+
+                  <h3 className="mt-5 text-2xl font-medium">
+                    Our Mission
+                  </h3>
+
+                  <p className="mt-4 leading-relaxed text-gray-600">
+                    To simplify global commerce by connecting businesses with
+                    the right sourcing and distribution opportunities.
+                  </p>
+
+                </div>
+              </Reveal>
+
+
+              {/* ================= PURPOSE ================= */}
+              <Reveal delay={300}>
+                <div className="rounded-2xl border border-black/10 bg-white p-6 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg">
+
+                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-neutral-100">
+                    ✅
+                  </div>
+
+                  <h3 className="mt-5 text-2xl font-medium">
+                    Our Purpose
+                  </h3>
+
+                  <p className="mt-4 leading-relaxed text-gray-600">
+                    We believe commerce is one of the strongest forces for
+                    growth, impact, and real value creation.
+                  </p>
+
+                </div>
+              </Reveal>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
+      {/* ================= CTA ================= */}
+      <section className="bg-black px-8 py-20 text-white md:px-16 lg:px-24">
+
+        <Reveal>
+          <div className="mx-auto max-w-7xl">
+
+            <h2 className="max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
+              Partner with PT Dunia Sports Interprises to grow your business
+              globally.
             </h2>
+
+            <a
+              href="/contact"
+              className="mt-10 inline-flex rounded-full bg-white px-8 py-4 text-sm text-black transition hover:-translate-y-1 hover:bg-gray-200"
+            >
+              Get in Touch →
+            </a>
+
           </div>
+        </Reveal>
 
-          <div className="border-t border-black/10">
-            <div className="grid gap-6 border-b border-black/10 py-8 md:grid-cols-[100px_1fr_1.5fr]">
-              <span className="text-sm text-gray-400">
-                01
-              </span>
-
-              <h3 className="text-2xl font-medium">
-                Creativity
-              </h3>
-
-              <p className="leading-relaxed text-gray-600">
-                We explore new ideas and approaches to create solutions
-                that are relevant and distinctive.
-              </p>
-            </div>
-
-            <div className="grid gap-6 border-b border-black/10 py-8 md:grid-cols-[100px_1fr_1.5fr]">
-              <span className="text-sm text-gray-400">
-                02
-              </span>
-
-              <h3 className="text-2xl font-medium">
-                Collaboration
-              </h3>
-
-              <p className="leading-relaxed text-gray-600">
-                We believe the best results come from working together
-                and understanding different perspectives.
-              </p>
-            </div>
-
-            <div className="grid gap-6 border-b border-black/10 py-8 md:grid-cols-[100px_1fr_1.5fr]">
-              <span className="text-sm text-gray-400">
-                03
-              </span>
-
-              <h3 className="text-2xl font-medium">
-                Impact
-              </h3>
-
-              <p className="leading-relaxed text-gray-600">
-                We focus on creating solutions that provide real value
-                for businesses and their customers.
-              </p>
-            </div>
-          </div>
-
-        </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-black px-8 py-24 text-white md:px-16 lg:px-24">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
-            Let's create something meaningful together.
-          </h2>
-
-          <a
-            href="/contact"
-            className="mt-10 inline-flex rounded-full bg-white px-8 py-4 text-sm text-black transition hover:bg-gray-200"
-          >
-            Get in Touch →
-          </a>
-        </div>
-      </section>
     </main>
   );
 }

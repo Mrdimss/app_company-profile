@@ -54,6 +54,13 @@ export default function Navbar() {
           >
             Contact
           </Link>
+          
+          <Link
+            href="/product"
+            className="relative transition-opacity duration-300 hover:opacity-50"
+          >
+            Product
+          </Link>
         </div>
 
         {/* Mobile Button */}
@@ -123,6 +130,13 @@ export default function Navbar() {
               onClick={() => setIsOpen(false)}
             >
               Contact
+            </Link>
+
+             <Link
+              href="/product"
+              onClick={() => setIsOpen(false)}
+            >
+              Product
             </Link>
 
           </div>
