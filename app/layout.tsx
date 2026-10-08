@@ -1,6 +1,5 @@
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import PublicShell from "@/components/PublicShell";
 
 export default function RootLayout({
   children,
@@ -10,9 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <Navbar />
-        {children}
-        <Footer />
+        <PublicShell>{children}</PublicShell>
       </body>
     </html>
   );
