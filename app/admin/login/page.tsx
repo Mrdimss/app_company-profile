@@ -31,7 +31,6 @@ export default function AdminLoginPage() {
       }
 
       router.replace("/admin/dashboard");
-      router.refresh();
     } catch {
       setError("Tidak dapat terhubung ke server. Silakan coba lagi.");
     } finally {
