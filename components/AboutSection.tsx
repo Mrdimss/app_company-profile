@@ -15,7 +15,7 @@ export default function AboutSection() {
             </p>
 
             <h2 className="max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
-              Building ideas into meaningful experiences.
+             Delivering quality in sports and beauty
             </h2>
           </div>
         </Reveal>
@@ -27,7 +27,7 @@ export default function AboutSection() {
           <Reveal delay={100}>
             <div className="relative aspect-[4/3] overflow-hidden">
               <Image
-                src="/images/about.png"
+                src="/images/girik.png"
                 alt="About our company"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -41,16 +41,19 @@ export default function AboutSection() {
           <Reveal delay={200}>
             <div className="max-w-xl">
               <p className="text-lg leading-relaxed text-gray-600">
-                We are a company focused on creating thoughtful solutions
-                through creativity, technology, and collaboration. Our goal
-                is to transform ideas into experiences that are useful,
-                meaningful, and impactful.
+                PT Dunia Sports Interprises is a trading and distribution
+                company based in Jakarta, Indonesia. The company focuses on
+                providing and selling a wide range of products, particularly
+                sports equipment, to meet market needs through various
+                marketing and distribution channels, including direct sales
+                and e-commerce.
               </p>
 
               <p className="mt-6 leading-relaxed text-gray-500">
-                From strategy and design to development, we work closely
-                with our clients to create solutions that are relevant to
-                their needs and built for the future.
+                The company's business operations are supported by various
+                activities, including merchandising, marketing, trade
+                marketing, logistics, delivery, import, warehouse management,
+                and customer services.
               </p>
 
               <Link

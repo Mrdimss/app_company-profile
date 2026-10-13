@@ -173,7 +173,8 @@ export default function ContactPage() {
                   </p>
 
                   <p className="mt-3 text-sm leading-relaxed text-gray-700">
-                    G-165, Sector-10, Faridabad, India, 121006
+                    Jl. Agung Timur 10 No. 13–16, RT 10/RW 14, Sunter Jaya, Tanjung Priok District,
+                     North Jakarta, Special Capital Region of Jakarta 14350, Indonesia.
                   </p>
 
                 </div>
@@ -247,7 +248,7 @@ export default function ContactPage() {
                   </p>
 
                   <p className="mt-3 text-sm text-gray-700">
-                    info@earthyby.com
+                    info@girik.com
                   </p>
 
                 </div>
@@ -318,20 +319,20 @@ export default function ContactPage() {
               <div className="grid gap-6 md:grid-cols-[180px_1fr_auto] md:items-center">
 
                 <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-                  India Branch
+                  Rukan
                 </p>
 
 
                 <div>
 
                   <p className="text-lg font-medium">
-                    Faridabad Office
+                    Girik Office
                   </p>
 
                   <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
 
-                    G-165, Sector-10,
-                    Faridabad, India, 121006
+                    No.13-16, Sector-10,
+                    Tanjung Priok, Jakarta, 14350, Indonesia.
 
                   </p>
 
@@ -670,7 +671,7 @@ export default function ContactPage() {
               </h2>
 
               <p className="mt-4 max-w-2xl text-gray-500">
-                G-165, Sector-10, Faridabad, India, 121006
+              No.13-16, Sector-10, Tanjung Priok, Jakarta, 14350, Indonesia.
               </p>
 
             </div>
@@ -688,15 +689,16 @@ export default function ContactPage() {
               <div className="relative h-[350px] w-full md:h-[500px]">
 
                 <iframe
-                  src="https://www.google.com/maps?q=G-165%2C%20Sector-10%2C%20Faridabad%2C%20India%2C%20121006&output=embed"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  loading="lazy"
+                 src="https://www.google.com/maps?q=Rukan+Sunter+Permai@-6.1385338,106.8769308&output=embed"
+                 width="100%"
+                 height="100%"
+                 style={{ border: 0 }}
+                 loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   allowFullScreen
                   title="PT Dunia Sports Interprises Location"
-                />
+                  />
+
 
               </div>
 
@@ -713,7 +715,8 @@ export default function ContactPage() {
                   </p>
 
                   <p className="mt-2 text-sm text-gray-700">
-                    G-165, Sector-10, Faridabad, India, 121006
+                   No.13-16, Sector-10,
+                    Tanjung Priok, Jakarta, 14350, Indonesia.
                   </p>
 
                 </div>
@@ -723,7 +726,7 @@ export default function ContactPage() {
                 {/* GOOGLE MAPS BUTTON */}
 
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=G-165%2C%20Sector-10%2C%20Faridabad%2C%20India%2C%20121006"
+                  href="https://www.google.com/maps/place/Rukan+Sunter+Permai/@-6.1385338,106.8743505,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69f53f52449e7b:0xd1053195255aa5e!8m2!3d-6.1385338!4d106.8769308!16s%2Fg%2F11gjq15v8b?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-full bg-black px-7 py-4 text-sm text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800"

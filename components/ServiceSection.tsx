@@ -3,27 +3,27 @@ import Reveal from "@/components/Reveal";
 const services = [
   {
     number: "01",
-    title: "Web Development",
+    title: "Trade",
     description:
-      "We build modern, responsive, and functional websites designed to support your business goals.",
+      "We deliver quality sports and beauty products to support your business needs.",
   },
   {
     number: "02",
-    title: "UI/UX Design",
+    title: "Distribution",
     description:
-      "We create simple and intuitive digital experiences that are easy to understand and enjoyable to use.",
+      "We provide reliable sports and beauty product distribution to meet your business needs.",
   },
   {
     number: "03",
-    title: "Digital Solutions",
+    title: "Product Management",
     description:
-      "We develop digital solutions that help businesses improve their processes, efficiency, and customer experience.",
+      "We manage sports and beauty products efficiently to ensure quality, availability, and customer satisfaction.",
   },
   {
     number: "04",
-    title: "Business Strategy",
+    title: "Marketing",
     description:
-      "We help transform ideas into clear digital strategies that align with business needs and objectives.",
+      "We promote sports and beauty products through effective marketing strategies to reach more customers..",
   },
 ];
 

@@ -30,7 +30,7 @@ export default function Hero() {
               : "translate-y-8 opacity-0"
           }`}
         >
-          Digital Creative Studio
+          PT Dunia Sports
         </p>
 
         {/* Main Heading */}
@@ -44,9 +44,9 @@ export default function Hero() {
             transitionDelay: "150ms",
           }}
         >
-          We create
+          We distributor
           <br />
-          <span className="text-gray-400">digital</span> experiences.
+          <span className="text-gray-400">sports and beauty </span> products.
         </h1>
 
         {/* Bottom Content */}
@@ -63,8 +63,7 @@ export default function Hero() {
 
           {/* Description */}
           <p className="max-w-md text-base leading-relaxed text-gray-500 md:text-lg">
-            We transform ideas into meaningful digital experiences
-            through design, technology, and creativity.
+           We distribute quality sports and beauty products with reliability and care.
           </p>
 
           {/* CTA */}
