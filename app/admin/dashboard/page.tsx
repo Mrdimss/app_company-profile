@@ -27,17 +27,17 @@ export default async function AdminDashboardPage() {
         </div>
         <div className="flex flex-col items-start justify-between gap-5 border border-neutral-200 bg-white p-5">
           <div>
-            <p className="text-sm text-neutral-500">Pengaturan akun</p>
+            <p className="text-sm text-neutral-500">Konten website</p>
             <p className="mt-2 text-sm text-neutral-700">
-              Perbarui nama, email, atau password admin.
+              Kelola project, layanan, produk, dan logo perusahaan.
             </p>
           </div>
-          <Link
-            href="/admin/settings"
-            className="text-sm font-medium text-neutral-950 underline underline-offset-4"
-          >
-            Buka pengaturan
-          </Link>
+          <div className="flex flex-wrap gap-3 text-sm font-medium text-neutral-950 underline underline-offset-4">
+            <Link href="/admin/projects">Project</Link>
+            <Link href="/admin/services">Service</Link>
+            <Link href="/admin/products">Product</Link>
+            <Link href="/admin/settings">Pengaturan</Link>
+          </div>
         </div>
       </section>
     </AdminShell>

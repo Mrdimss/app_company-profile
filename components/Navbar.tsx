@@ -3,8 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export default function Navbar() {
+type NavbarProps = {
+  company: {
+    companyName: string;
+    logoUrl?: string | null;
+    logoAltText?: string | null;
+  };
+};
+
+export default function Navbar({ company }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const brandName = company.companyName || "GIRIK";
 
   return (
     <nav className="relative z-50 border-b border-black/10 bg-white">
@@ -13,9 +22,17 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="text-xl font-semibold tracking-tight"
+          className="flex items-center gap-3 text-xl font-semibold tracking-tight"
         >
-          LOGO
+          {company.logoUrl ? (
+            <img
+              alt={company.logoAltText || brandName}
+              className="h-10 w-auto object-contain"
+              src={company.logoUrl}
+            />
+          ) : (
+            <span>{brandName}</span>
+          )}
         </Link>
 
         {/* Desktop Menu */}

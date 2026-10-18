@@ -3,13 +3,16 @@ import type { ReactNode } from "react";
 import LogoutButton from "@/components/LogoutButton";
 
 type AdminShellProps = {
-  activePage: "dashboard" | "settings";
+  activePage: "dashboard" | "settings" | "projects" | "services" | "products";
   adminName: string;
   children: ReactNode;
 };
 
 const navigation = [
   { href: "/admin/dashboard", label: "Dashboard", page: "dashboard" },
+  { href: "/admin/projects", label: "Project", page: "projects" },
+  { href: "/admin/services", label: "Service", page: "services" },
+  { href: "/admin/products", label: "Product", page: "products" },
   { href: "/admin/settings", label: "Pengaturan", page: "settings" },
 ] as const;
 

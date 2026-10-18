@@ -5,16 +5,32 @@ import type { ReactNode } from "react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
-export default function PublicShell({ children }: { children: ReactNode }) {
+type CompanyBrand = {
+  companyName: string;
+  tagline?: string | null;
+  logoUrl?: string | null;
+  logoAltText?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+};
+
+export default function PublicShell({
+  children,
+  company,
+}: {
+  children: ReactNode;
+  company: CompanyBrand;
+}) {
   const pathname = usePathname();
 
   if (pathname.startsWith("/admin")) return children;
 
   return (
     <>
-      <Navbar />
+      <Navbar company={company} />
       {children}
-      <Footer />
+      <Footer company={company} />
     </>
   );
 }

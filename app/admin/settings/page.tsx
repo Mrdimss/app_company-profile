@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import AdminProfileForm from "@/components/AdminProfileForm";
 import AdminSecurityForm from "@/components/AdminSecurityForm";
 import AdminShell from "@/components/AdminShell";
+import CompanySettingsForm from "@/components/CompanySettingsForm";
 import { getAdminSession } from "@/lib/admin-auth";
 
 export default async function AdminSettingsPage() {
@@ -20,6 +21,14 @@ export default async function AdminSettingsPage() {
         </h1>
       </div>
       <div className="space-y-8">
+        <section aria-labelledby="branding-heading">
+          <div className="mb-4">
+            <h2 id="branding-heading" className="text-xl font-semibold">Perusahaan</h2>
+            <p className="mt-1 text-sm text-neutral-500">Kelola nama, logo, dan informasi perusahaan yang tampil di website publik.</p>
+          </div>
+          <CompanySettingsForm />
+        </section>
+
         <section aria-labelledby="profile-heading">
           <div className="mb-4">
             <h2 id="profile-heading" className="text-xl font-semibold">Profil</h2>

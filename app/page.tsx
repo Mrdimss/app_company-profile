@@ -3,14 +3,20 @@ import AboutSection from "@/components/AboutSection";
 import ServiceSection from "@/components/ServiceSection";
 import ProjectSection from "@/components/ProjectSection";
 import ContactSection from "@/components/ContactSection";
+import { getPublishedProjects, getPublishedServices } from "@/lib/content";
 
-export default function Home() {
+export default async function Home() {
+  const [services, projects] = await Promise.all([
+    getPublishedServices(),
+    getPublishedProjects(),
+  ]);
+
   return (
     <main>
       <Hero />
       <AboutSection />
-      <ServiceSection />
-      <ProjectSection />
+      <ServiceSection services={services} />
+      <ProjectSection projects={projects} />
       <ContactSection />
     </main>
   );

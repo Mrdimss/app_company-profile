@@ -1,38 +1,17 @@
 import Reveal from "@/components/Reveal";
 
-const services = [
-  {
-    number: "01",
-    title: "Trade",
-    description:
-      "We deliver quality sports and beauty products to support your business needs.",
-  },
-  {
-    number: "02",
-    title: "Distribution",
-    description:
-      "We provide reliable sports and beauty product distribution to meet your business needs.",
-  },
-  {
-    number: "03",
-    title: "Product Management",
-    description:
-      "We manage sports and beauty products efficiently to ensure quality, availability, and customer satisfaction.",
-  },
-  {
-    number: "04",
-    title: "Marketing",
-    description:
-      "We promote sports and beauty products through effective marketing strategies to reach more customers..",
-  },
-];
+type ServiceItem = {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string | null;
+  sortOrder: number;
+};
 
-export default function ServicesSection() {
+export default function ServicesSection({ services }: { services: ServiceItem[] }) {
   return (
     <section className="bg-black px-8 py-24 text-white md:px-16 lg:px-24">
       <div className="mx-auto max-w-7xl">
-
-        {/* Header */}
         <Reveal>
           <div className="mb-20">
             <p className="mb-4 text-sm uppercase tracking-[0.3em] text-gray-400">
@@ -47,35 +26,30 @@ export default function ServicesSection() {
           </div>
         </Reveal>
 
-        {/* Services */}
         <div className="border-t border-white/20">
           {services.map((service, index) => (
-            <Reveal
-              key={service.number}
-              delay={index * 100}
-            >
+            <Reveal key={service.id} delay={index * 100}>
               <div className="group grid gap-6 border-b border-white/20 py-8 transition duration-300 md:grid-cols-[100px_1fr_1.5fr] md:items-start md:gap-10">
-
-                {/* Number */}
                 <span className="text-sm text-gray-500">
-                  {service.number}
+                  {String((service.sortOrder || index + 1)).padStart(2, "0")}
                 </span>
 
-                {/* Title */}
-                <h3 className="text-2xl font-medium transition-transform duration-300 group-hover:translate-x-2 md:text-3xl">
-                  {service.title}
-                </h3>
+                <div className="flex items-center gap-3">
+                  {service.icon ? (
+                    <span className="text-xl text-gray-300">{service.icon}</span>
+                  ) : null}
+                  <h3 className="text-2xl font-medium transition-transform duration-300 group-hover:translate-x-2 md:text-3xl">
+                    {service.title}
+                  </h3>
+                </div>
 
-                {/* Description */}
                 <p className="max-w-lg leading-relaxed text-gray-400">
                   {service.description}
                 </p>
-
               </div>
             </Reveal>
           ))}
         </div>
-
       </div>
     </section>
   );
