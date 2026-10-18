@@ -3,7 +3,7 @@ This is a [Next.js](https://nextjs.org) company profile website with a separate 
 ## Admin setup
 
 1. Copy `.env.example` to `.env`.
-2. Set `DATABASE_URL` to your MySQL credentials and database, for example `mysql://USER:PASSWORD@localhost:3306/girik_db`. URL-encode special characters in the username or password.
+2. Set `DATABASE_URL` to your MySQL credentials and database, for example `mysql://USER:PASSWORD@localhost:3306/your-db`. URL-encode special characters in the username or password.
 3. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` (at least 12 characters) for the initial admin account.
 4. Install dependencies with `npm install`.
 5. Back up the existing database, then add/update the Prisma tables with `npm run db:push`.
