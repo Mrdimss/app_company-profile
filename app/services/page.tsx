@@ -78,36 +78,10 @@ export default async function ServicesPage() {
       `}</style>
 
       <div className="mx-auto max-w-7xl">
-
-        {/* HEADER */}
-
-        <div className="services-fade-in">
-          <p className="mb-6 text-sm uppercase tracking-[0.3em] text-gray-500">
-            Our Services
-          </p>
-        </div>
-
-        <div
-          className="services-fade-up"
-          style={{ animationDelay: "150ms" }}
-        >
-          <h1 className="max-w-6xl text-5xl font-medium leading-[1] tracking-tight sm:text-6xl md:text-7xl">
-            Solutions for your growth.
-          </h1>
-        </div>
-
-        <div
-          className="services-fade-up"
-          style={{ animationDelay: "300ms" }}
-        >
-          <p className="mt-7 max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg">
-            We provide reliable solutions for sports equipment,
-            beauty products, distribution, and business growth.
-            Discover the services we offer to support your needs.
-          </p>
-        </div>
-
-        {/* SERVICE LIST */}
+        <p className="mb-6 text-sm uppercase tracking-[0.3em] text-gray-500">Our Services</p>
+        <h1 className="max-w-6xl text-5xl font-medium leading-none tracking-tight sm:text-6xl md:text-7xl">
+          Solutions for your growth.
+        </h1>
 
         {services.length === 0 ? (
           <div

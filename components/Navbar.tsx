@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type NavbarProps = {
   company: {
@@ -25,8 +26,12 @@ export default function Navbar({ company }: NavbarProps) {
           className="flex items-center gap-3 text-xl font-semibold tracking-tight"
         >
           {company.logoUrl ? (
-            <img
+            <Image
               alt={company.logoAltText || brandName}
+              width={200}
+              height={80}
+              loading="eager"
+              unoptimized
               className="h-10 w-auto object-contain"
               src={company.logoUrl}
             />

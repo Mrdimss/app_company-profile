@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { slugify } from "@/lib/slugify";
 
 type ContentKind = "project" | "service" | "product";
 
@@ -45,7 +47,7 @@ function getApiBase(kind: ContentKind) {
       : "/api/products";
 }
 
-function getDefaultState(kind: ContentKind): FormState {
+function getDefaultState(): FormState {
   return {
     title: "",
     name: "",
@@ -68,10 +70,6 @@ function getTitleValue(item: ItemRecord, kind: ContentKind) {
   return item.title ?? "Judul";
 }
 
-function getFieldName(kind: ContentKind) {
-  return kind === "product" ? "name" : "title";
-}
-
 export default function ContentManager({
   kind,
   title,
@@ -82,43 +80,101 @@ export default function ContentManager({
   emptyText: string;
 }) {
   const [items, setItems] = useState<ItemRecord[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadedApiBase, setLoadedApiBase] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [form, setForm] = useState<FormState>(getDefaultState(kind));
+  const [form, setForm] = useState<FormState>(getDefaultState);
 
   const apiBase = getApiBase(kind);
+  const loading = loadedApiBase !== apiBase;
   const titleField = kind === "product" ? "name" : "title";
+  const loadAbortController = useRef<AbortController | null>(null);
 
-  async function loadItems() {
-    try {
-      const response = await fetch(`${apiBase}?all=true`);
-      const result = await response.json();
-
-      if (!response.ok) {
-        setError(result.error ?? "Gagal memuat data.");
-        return;
-      }
-
-      setItems(Array.isArray(result.items) ? result.items : []);
-    } catch {
-      setError("Tidak dapat memuat data dari server.");
-    } finally {
-      setLoading(false);
-    }
+  function handleTitleChange(value: string) {
+    setForm((current) => ({
+      ...current,
+      [titleField]: value,
+      slug: slugify(value),
+    }));
   }
 
-  useEffect(() => {
-    void loadItems();
+  const loadItems = useCallback(async (signal?: AbortSignal) => {
+    try {
+      const response = await fetch(`${apiBase}?all=true`, { signal });
+      const result = await response.json();
+
+      if (signal?.aborted) return { items: [], error: null };
+
+      if (!response.ok) {
+        return {
+          items: [],
+          error: result.error ?? "Gagal memuat data.",
+        };
+      }
+
+      return {
+        items: Array.isArray(result.items) ? result.items : [],
+        error: null,
+      };
+    } catch {
+      return {
+        items: [],
+        error: signal?.aborted ? null : "Tidak dapat memuat data dari server.",
+      };
+    }
   }, [apiBase]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    loadAbortController.current = controller;
+    let isCurrent = true;
+
+    async function load() {
+      const result = await loadItems(controller.signal);
+
+      if (!isCurrent || controller.signal.aborted) return;
+
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setItems(result.items);
+        setError("");
+      }
+      setLoadedApiBase(apiBase);
+    }
+
+    void load();
+
+    return () => {
+      isCurrent = false;
+      controller.abort();
+      if (loadAbortController.current === controller) {
+        loadAbortController.current = null;
+      }
+    };
+  }, [apiBase, loadItems]);
+
+  const refreshItems = useCallback(async (signal?: AbortSignal) => {
+    const result = await loadItems(signal);
+
+    if (signal?.aborted) return;
+
+    if (result.error) {
+      setError(result.error);
+    } else {
+      setItems(result.items);
+      setError("");
+    }
+    setLoadedApiBase(apiBase);
+  }, [apiBase, loadItems]);
 
   function resetForm() {
     setEditingId(null);
     setImageFile(null);
-    setForm(getDefaultState(kind));
+    setForm(getDefaultState());
   }
 
   function handleEdit(item: ItemRecord) {
@@ -156,7 +212,7 @@ export default function ContentManager({
 
       setMessage("Data berhasil dihapus.");
       setError("");
-      await loadItems();
+      await refreshItems(loadAbortController.current?.signal);
     } catch {
       setError("Tidak dapat menghapus data.");
     }
@@ -220,7 +276,7 @@ export default function ContentManager({
 
       setMessage(editingId ? "Data berhasil diperbarui." : "Data berhasil ditambahkan.");
       resetForm();
-      await loadItems();
+      await refreshItems(loadAbortController.current?.signal);
     } catch {
       setError("Tidak dapat terhubung ke server.");
     } finally {
@@ -244,12 +300,7 @@ export default function ContentManager({
               {kind === "project" ? "Judul project" : "Nama produk"}
               <input
                 className={inputClassName}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    [titleField]: event.target.value,
-                  }))
-                }
+                onChange={(event) => handleTitleChange(event.target.value)}
                 required
                 value={kind === "project" ? form.title : form.name}
               />
@@ -261,12 +312,7 @@ export default function ContentManager({
               Judul layanan
               <input
                 className={inputClassName}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    title: event.target.value,
-                  }))
-                }
+                onChange={(event) => handleTitleChange(event.target.value)}
                 required
                 value={form.title}
               />
@@ -460,8 +506,11 @@ export default function ContentManager({
               <div key={item.id} className="grid gap-5 p-5 md:grid-cols-[1fr_auto] md:items-start">
                 <div className="flex gap-4">
                   {(kind === "project" || kind === "product") && item.image && (
-                    <img
+                    <Image
                       alt={getTitleValue(item, kind)}
+                      width={80}
+                      height={80}
+                      unoptimized
                       className="h-20 w-20 rounded-md border border-neutral-200 object-cover"
                       src={item.image}
                     />
@@ -506,4 +555,3 @@ export default function ContentManager({
     </div>
   );
 }
-

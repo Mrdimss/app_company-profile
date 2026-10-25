@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type CompanySettings = {
   companyName: string;
@@ -224,8 +225,11 @@ export default function CompanySettingsForm() {
         {settings.logoUrl && (
           <div className="overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-3">
             <p className="mb-3 text-xs uppercase tracking-[0.2em] text-neutral-500">Preview logo</p>
-            <img
+            <Image
               alt={settings.logoAltText || settings.companyName}
+              width={320}
+              height={160}
+              unoptimized
               className="max-h-20 w-auto object-contain"
               src={settings.logoUrl}
             />

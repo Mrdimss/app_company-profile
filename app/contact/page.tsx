@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type FormStatus = {
+  type: "success" | "error";
+  message: string;
+};
+
 /* =========================================================
    REVEAL COMPONENT
    Efek muncul saat elemen masuk ke layar
@@ -73,11 +78,85 @@ function Reveal({
 ========================================================= */
 
 export default function ContactPage() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [status, setStatus] = useState<FormStatus | null>(null);
+  const isSendingRef = useRef(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitted(true);
+
+    if (isSendingRef.current) return;
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const fields = {
+      firstName: String(formData.get("firstName") ?? "").trim(),
+      lastName: String(formData.get("lastName") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim(),
+      phone: String(formData.get("phone") ?? "").trim(),
+      company: String(formData.get("company") ?? "").trim(),
+      country: String(formData.get("country") ?? "").trim(),
+      message: String(formData.get("message") ?? "").trim(),
+    };
+
+    if (Object.values(fields).some((value) => !value)) {
+      setStatus({ type: "error", message: "Please complete all required fields." });
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
+      setStatus({ type: "error", message: "Please enter a valid email address." });
+      return;
+    }
+
+    isSendingRef.current = true;
+    setIsSending(true);
+    setStatus(null);
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 30_000);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
+        signal: controller.signal,
+      });
+      const result: unknown = await response.json().catch(() => null);
+      const responseBody =
+        result && typeof result === "object"
+          ? (result as { ok?: unknown; error?: unknown; emailSent?: unknown })
+          : null;
+
+      if (!response.ok || responseBody?.ok !== true) {
+        setStatus({
+          type: "error",
+          message:
+            typeof responseBody?.error === "string"
+              ? responseBody.error
+              : "Your message could not be sent. Please try again.",
+        });
+        return;
+      }
+
+      form.reset();
+      setStatus({
+        type: "success",
+        message:
+          responseBody?.emailSent === false
+            ? "Your message has been received. Email notification is temporarily delayed."
+            : "Thank you. Your message has been submitted successfully.",
+      });
+    } catch {
+      setStatus({
+        type: "error",
+        message: "We could not confirm whether your message was received. Please contact us before submitting again.",
+      });
+    } finally {
+      window.clearTimeout(timeoutId);
+      isSendingRef.current = false;
+      setIsSending(false);
+    }
   };
 
   return (
@@ -490,7 +569,10 @@ export default function ContactPage() {
 
                   <input
                     type="text"
+                    name="firstName"
                     required
+                    maxLength={80}
+                    autoComplete="given-name"
                     placeholder="First name"
                     className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
                   />
@@ -509,7 +591,10 @@ export default function ContactPage() {
 
                   <input
                     type="text"
+                    name="lastName"
                     required
+                    maxLength={80}
+                    autoComplete="family-name"
                     placeholder="Last name"
                     className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
                   />
@@ -528,7 +613,10 @@ export default function ContactPage() {
 
                   <input
                     type="email"
+                    name="email"
                     required
+                    maxLength={254}
+                    autoComplete="email"
                     placeholder="your@email.com"
                     className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
                   />
@@ -547,7 +635,10 @@ export default function ContactPage() {
 
                   <input
                     type="tel"
+                    name="phone"
                     required
+                    maxLength={40}
+                    autoComplete="tel"
                     placeholder="+91"
                     className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
                   />
@@ -566,7 +657,10 @@ export default function ContactPage() {
 
                   <input
                     type="text"
+                    name="company"
                     required
+                    maxLength={120}
+                    autoComplete="organization"
                     placeholder="Company name"
                     className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
                   />
@@ -585,7 +679,10 @@ export default function ContactPage() {
 
                   <input
                     type="text"
+                    name="country"
                     required
+                    maxLength={100}
+                    autoComplete="country-name"
                     placeholder="Country"
                     className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
                   />
@@ -603,8 +700,10 @@ export default function ContactPage() {
                   </label>
 
                   <textarea
+                    name="message"
                     required
                     rows={7}
+                    maxLength={5000}
                     placeholder="To better assist you, please describe how we can help."
                     className="w-full resize-none border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
                   />
@@ -619,18 +718,23 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
+                    disabled={isSending}
                     className="rounded-full bg-black px-8 py-4 text-sm text-white transition duration-300 hover:-translate-y-1 hover:bg-gray-800"
                   >
-                    Send Message →
+                    {isSending ? "Sending..." : "Send Message →"}
                   </button>
 
 
-                  {isSubmitted && (
-
-                    <p className="mt-4 text-sm text-green-600">
-                      Thank you. Your message has been submitted.
+                  {status && (
+                    <p
+                      className={`mt-4 text-sm ${
+                        status.type === "success" ? "text-green-600" : "text-red-600"
+                      }`}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {status.message}
                     </p>
-
                   )}
 
                 </div>

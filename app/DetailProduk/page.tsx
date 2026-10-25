@@ -2,6 +2,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 
 type ProductItem = {
@@ -13,25 +14,24 @@ type ProductItem = {
   productUrl?: string | null;
 };
 
-function DetailProdukContent() {
+function ProductDetails({ id }: { id: string | null }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [product, setProduct] = useState<ProductItem | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(id !== null);
 
   useEffect(() => {
-    const id = searchParams.get("id");
-
     if (!id) {
-      setProduct(null);
-      setLoading(false);
       return;
     }
+
+    let isCurrent = true;
 
     async function loadProduct() {
       try {
         const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
+
+        if (!isCurrent) return;
 
         if (!response.ok) {
           setProduct(null);
@@ -40,14 +40,39 @@ function DetailProdukContent() {
 
         setProduct(data.item ?? null);
       } catch {
-        setProduct(null);
+        if (isCurrent) {
+          setProduct(null);
+        }
       } finally {
-        setLoading(false);
+        if (isCurrent) {
+          setLoading(false);
+        }
       }
     }
 
     void loadProduct();
-  }, [searchParams]);
+    return () => {
+      isCurrent = false;
+    };
+  }, [id]);
+
+  if (!id) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-white px-8 text-black">
+        <div className="text-center">
+          <h1 className="text-3xl font-medium">Product Not Found</h1>
+          <p className="mt-4 text-gray-500">The product you are looking for is unavailable.</p>
+          <button
+            type="button"
+            onClick={() => router.push("/product")}
+            className="mt-8 rounded-full bg-black px-8 py-4 text-sm text-white transition hover:bg-gray-700"
+          >
+            Back to Products
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   if (loading) {
     return (
@@ -87,9 +112,16 @@ function DetailProdukContent() {
         </button>
 
         <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
-          <div className="overflow-hidden bg-neutral-100">
+          <div className="relative aspect-square overflow-hidden bg-neutral-100">
             {product.image ? (
-              <img src={product.image} alt={product.name} className="aspect-square h-full w-full object-cover" />
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                unoptimized
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
             ) : (
               <div className="flex aspect-square items-center justify-center bg-neutral-200 text-sm text-neutral-500">
                 No image
@@ -143,4 +175,11 @@ export default function DetailProdukPage() {
       <DetailProdukContent />
     </Suspense>
   );
+}
+
+function DetailProdukContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
+  return <ProductDetails key={id ?? "missing"} id={id} />;
 }

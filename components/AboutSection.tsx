@@ -50,7 +50,7 @@ export default function AboutSection() {
               </p>
 
               <p className="mt-6 leading-relaxed text-gray-500">
-                The company's business operations are supported by various
+                The company&apos;s business operations are supported by various
                 activities, including merchandising, marketing, trade
                 marketing, logistics, delivery, import, warehouse management,
                 and customer services.

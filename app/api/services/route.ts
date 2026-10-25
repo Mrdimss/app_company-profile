@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
-import { getPublishedServices, slugify } from "@/lib/content";
+import { getPublishedServices, getUniqueSlug } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
 
 function readString(value: unknown): string | undefined {
@@ -91,10 +91,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Judul dan deskripsi layanan wajib diisi." }, { status: 400 });
     }
 
+    const slug = await getUniqueSlug(slugInput || title, (value) =>
+      prisma.service.findUnique({ where: { slug: value }, select: { id: true } }),
+    );
+
     const item = await prisma.service.create({
       data: {
         title,
-        slug: slugify(slugInput || title),
+        slug,
         description,
         icon,
         sortOrder: sortOrderValue,

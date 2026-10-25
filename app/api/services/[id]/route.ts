@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import { slugify } from "@/lib/content";
+import { getUniqueSlug } from "@/lib/content";
 
 function readString(value: unknown): string | undefined {
   if (typeof value === "string") {
@@ -27,12 +27,32 @@ function readBoolean(value: unknown, fallback = true): boolean {
   return fallback;
 }
 
+function parseRequestData(request: Request) {
+  const contentType = request.headers.get("content-type") ?? "";
+
+  if (contentType.includes("multipart/form-data")) {
+    return request.formData().then((formData) => {
+      const output: Record<string, unknown> = {};
+
+      for (const [key, value] of formData.entries()) {
+        output[key] = value;
+      }
+
+      return output;
+    });
+  }
+
+  return request.json().catch(() => null);
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const item = await prisma.service.findUnique({ where: { id } });
+  const item = await prisma.service.findFirst({
+    where: { id, isPublished: true },
+  });
 
   if (!item) {
     return NextResponse.json({ error: "Layanan tidak ditemukan." }, { status: 404 });
@@ -59,18 +79,15 @@ export async function PATCH(
       return NextResponse.json({ error: "Layanan tidak ditemukan." }, { status: 404 });
     }
 
-    let body: Record<string, unknown> = {};
-
-    try {
-      body = await request.json();
-    } catch {
+    const body = await parseRequestData(request);
+    if (!body) {
       return NextResponse.json({ error: "Data layanan tidak valid." }, { status: 400 });
     }
 
     const title = readString(body.title);
     const description = readString(body.description);
     const icon = body.icon === undefined ? undefined : readString(body.icon) ?? null;
-    const slugValue = body.slug === undefined ? undefined : readString(body.slug) ?? undefined;
+    const slugValue = body.slug === undefined ? undefined : readString(body.slug);
     const sortOrderValue =
       body.sortOrder === undefined ? undefined : Number.parseInt(readString(body.sortOrder) ?? "0", 10) || 0;
 
@@ -88,7 +105,15 @@ export async function PATCH(
     if (typeof icon !== "undefined") updateData.icon = icon;
     if (typeof sortOrderValue !== "undefined") updateData.sortOrder = sortOrderValue;
     if (typeof body.isPublished !== "undefined") updateData.isPublished = readBoolean(body.isPublished, true);
-    if (typeof slugValue !== "undefined" && slugValue) updateData.slug = slugify(slugValue);
+    const requestedSlug =
+      slugValue || (body.slug !== undefined || title !== undefined ? title : undefined);
+    if (requestedSlug) {
+      updateData.slug = await getUniqueSlug(
+        requestedSlug,
+        (value) => prisma.service.findUnique({ where: { slug: value }, select: { id: true } }),
+        id,
+      );
+    }
 
     const item = await prisma.service.update({
       where: { id },

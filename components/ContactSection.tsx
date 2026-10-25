@@ -14,7 +14,7 @@ export default function ContactSection() {
             <h2 className="text-5xl font-medium leading-[1.05] tracking-tight md:text-7xl lg:text-8xl">
               Have an idea?
               <br />
-              Let's make it happen.
+              Let&apos;s make it happen.
             </h2>
 
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-gray-600">

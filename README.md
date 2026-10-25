@@ -10,7 +10,9 @@ This is a [Next.js](https://nextjs.org) company profile website with a separate 
 6. Create or update the initial admin account with `npm run db:seed`.
 7. Start the app with `npm run dev` and open `/admin/login`.
 
-Admin sessions use an HTTP-only `admin_session` cookie and are stored in the database. The public site layout is not rendered on admin routes.
+Admin sessions use an HTTP-only `admin_session` cookie and are stored in the database. Login attempts are also limited using a MySQL-backed per-email counter, shared by application instances that use the same database. The added `admin_login_throttles` table is created by `npm run db:push`; do not deploy the updated login route before applying this additive schema update. Throttle records older than 24 hours are pruned during login traffic.
+
+The limiter does not trust client-supplied IP headers because this project has no trusted-proxy configuration. It limits each normalized email to five login attempts per 15-minute window and applies a one-minute temporary block after the limit is exceeded. The public site layout is not rendered on admin routes.
 
 ## Getting Started
 

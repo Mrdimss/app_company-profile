@@ -84,7 +84,7 @@ export default function Hero() {
               href="/contact"
               className="inline-flex items-center justify-center rounded-full border border-gray-300 px-7 py-4 text-sm transition-all duration-300 hover:-translate-y-1 hover:border-black hover:bg-gray-100"
             >
-              Let's Talk
+              Let&apos;s Talk
             </Link>
 
           </div>

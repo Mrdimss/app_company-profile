@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 function Reveal({
@@ -88,11 +89,13 @@ export default function AboutPage() {
 
           {/* IMAGE */}
           <Reveal>
-            <div className="overflow-hidden rounded-2xl shadow-sm">
-              <img
+            <div className="relative h-85 w-full overflow-hidden rounded-2xl shadow-sm md:h-130">
+              <Image
                 src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1400&q=80"
                 alt="Container ship"
-                className="h-[340px] w-full object-cover md:h-[520px]"
+                fill
+                unoptimized
+                className="object-cover"
               />
             </div>
           </Reveal>
@@ -120,7 +123,7 @@ export default function AboutPage() {
               </p>
 
               <p className="mt-6 leading-relaxed text-gray-700">
-                The company's business operations are supported by various
+                The company&apos;s business operations are supported by various
                 activities, including merchandising, marketing, trade
                 marketing, logistics, delivery, import, warehouse management,
                 and customer services. In addition to sports products, PT

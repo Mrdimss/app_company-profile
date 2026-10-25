@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 type FooterProps = {
   company: {
@@ -29,8 +30,11 @@ export default function Footer({ company }: FooterProps) {
               className="flex items-center gap-3 text-2xl font-semibold tracking-tight"
             >
               {company.logoUrl ? (
-                <img
+                <Image
                   alt={company.logoAltText || brandName}
+                  width={240}
+                  height={96}
+                  unoptimized
                   className="h-12 w-auto object-contain"
                   src={company.logoUrl}
                 />

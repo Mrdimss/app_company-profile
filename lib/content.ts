@@ -1,4 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { slugify } from "@/lib/slugify";
+
+export { slugify } from "@/lib/slugify";
 
 export const defaultCompanySettings = {
   id: "company",
@@ -157,14 +160,24 @@ export async function getPublishedProducts() {
   );
 }
 
-export function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/<[^>]*>/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 100) || "item";
+export async function getUniqueSlug(
+  value: string,
+  findExisting: (slug: string) => Promise<{ id: string } | null>,
+  currentId?: string,
+): Promise<string> {
+  const baseSlug = slugify(value);
+  let slug = baseSlug;
+  let suffix = 2;
+
+  while (true) {
+    const existing = await findExisting(slug);
+
+    if (!existing || existing.id === currentId) {
+      return slug;
+    }
+
+    const suffixText = `-${suffix++}`;
+    const slugBase = baseSlug.slice(0, 100 - suffixText.length).replace(/-+$/g, "");
+    slug = `${slugBase}${suffixText}`;
+  }
 }

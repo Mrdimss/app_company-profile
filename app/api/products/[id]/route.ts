@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { removeUploadedImage, saveUploadedImage } from "@/lib/storage";
-import { slugify } from "@/lib/content";
+import { getUniqueSlug } from "@/lib/content";
 
 function readString(value: unknown): string | undefined {
   if (typeof value === "string") {
@@ -51,7 +51,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const item = await prisma.product.findUnique({ where: { id } });
+  const item = await prisma.product.findFirst({
+    where: { id, isPublished: true },
+  });
 
   if (!item) {
     return NextResponse.json({ error: "Produk tidak ditemukan." }, { status: 404 });
@@ -88,7 +90,7 @@ export async function PATCH(
     const description = readString(body.description);
     const category = body.category === undefined ? undefined : readString(body.category) ?? null;
     const productUrl = body.productUrl === undefined ? undefined : readString(body.productUrl) ?? null;
-    const slugValue = body.slug === undefined ? undefined : readString(body.slug) ?? undefined;
+    const slugValue = body.slug === undefined ? undefined : readString(body.slug);
     const imageFile = body.image instanceof File ? body.image : null;
     const shouldRemoveImage = body.removeImage === "true" || body.removeImage === true;
 
@@ -115,7 +117,15 @@ export async function PATCH(
     if (typeof category !== "undefined") updateData.category = category;
     if (typeof productUrl !== "undefined") updateData.productUrl = productUrl;
     if (typeof body.isPublished !== "undefined") updateData.isPublished = readBoolean(body.isPublished, true);
-    if (typeof slugValue !== "undefined" && slugValue) updateData.slug = slugify(slugValue);
+    const requestedSlug =
+      slugValue || (body.slug !== undefined || name !== undefined ? name : undefined);
+    if (requestedSlug) {
+      updateData.slug = await getUniqueSlug(
+        requestedSlug,
+        (value) => prisma.product.findUnique({ where: { slug: value }, select: { id: true } }),
+        id,
+      );
+    }
     if (typeof nextImageUrl !== "undefined") updateData.image = nextImageUrl;
 
     const item = await prisma.product.update({

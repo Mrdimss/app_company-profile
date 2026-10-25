@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
-import { getPublishedProducts, slugify } from "@/lib/content";
+import { getPublishedProducts, getUniqueSlug } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
 import { saveUploadedImage } from "@/lib/storage";
 
@@ -93,6 +93,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Nama dan deskripsi produk wajib diisi." }, { status: 400 });
     }
 
+    const slug = await getUniqueSlug(slugInput || name, (value) =>
+      prisma.product.findUnique({ where: { slug: value }, select: { id: true } }),
+    );
     let imageUrl: string | null = null;
 
     if (imageFile) {
@@ -102,7 +105,7 @@ export async function POST(request: Request) {
     const item = await prisma.product.create({
       data: {
         name,
-        slug: slugify(slugInput || name),
+        slug,
         description,
         image: imageUrl,
         category,

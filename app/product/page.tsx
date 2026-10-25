@@ -1,6 +1,7 @@
 
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -153,14 +154,16 @@ export default function ProductPage() {
                     type="button"
                     onClick={() => openDetail(product.id)}
                     aria-label={`View ${product.name} details`}
-                    className="block aspect-square w-full overflow-hidden bg-neutral-100"
+                    className="relative block aspect-square w-full overflow-hidden bg-neutral-100"
                   >
                     {product.image ? (
-                      <img
+                      <Image
                         src={product.image}
                         alt={product.name}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition duration-700 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center bg-neutral-200 text-sm text-neutral-500">
