@@ -27,7 +27,7 @@ export default function AboutSection() {
           <Reveal delay={100}>
             <div className="relative aspect-[4/3] overflow-hidden">
               <Image
-                src="/images/girik.png"
+                src="/images/template.png"
                 alt="About our company"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
