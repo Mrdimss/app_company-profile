@@ -93,12 +93,9 @@ export default function Hero() {
               href="/contact"
               className="inline-flex items-center justify-center gap-3 rounded-full border border-blue-200 bg-white/70 px-7 py-4 text-sm font-semibold text-blue-950 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:bg-white"
             >
-
-              Let&apos;s Talk
-=======
               Let's Talk
               <span aria-hidden="true">↗</span>
-              fc22d4b (Update project company profile)
+              
             </Link>
           </div>
 

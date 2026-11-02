@@ -20,9 +20,7 @@ function ProductDetails({ id }: { id: string | null }) {
   const [loading, setLoading] = useState(id !== null);
 
   useEffect(() => {
-    if (!id) {
-      return;
-    }
+    if (!id) return;
 
     let isCurrent = true;
 
@@ -40,79 +38,78 @@ function ProductDetails({ id }: { id: string | null }) {
 
         setProduct(data.item ?? null);
       } catch {
-        if (isCurrent) {
-          setProduct(null);
-        }
+        if (isCurrent) setProduct(null);
       } finally {
-        if (isCurrent) {
-          setLoading(false);
-        }
+        if (isCurrent) setLoading(false);
       }
     }
 
     void loadProduct();
+
     return () => {
       isCurrent = false;
     };
   }, [id]);
 
-  if (!id) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-white px-8 text-black">
-        <div className="text-center">
-          <h1 className="text-3xl font-medium">Product Not Found</h1>
-          <p className="mt-4 text-gray-500">The product you are looking for is unavailable.</p>
-          <button
-            type="button"
-            onClick={() => router.push("/product")}
-            className="mt-8 rounded-full bg-black px-8 py-4 text-sm text-white transition hover:bg-gray-700"
-          >
-            Back to Products
-          </button>
-        </div>
-      </main>
-    );
-  }
+  const buttonClass =
+    "rounded-full bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-4 text-sm font-medium text-white shadow-lg shadow-blue-900/15 transition duration-300 hover:-translate-y-1 hover:shadow-xl";
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-white text-gray-500">
-        Loading product...
-      </main>
-    );
-  }
+  if (!id || loading || !product) {
+    const message = !id
+      ? "The product you are looking for is unavailable."
+      : loading
+      ? "Loading product..."
+      : "The product you are looking for is unavailable.";
 
-  if (!product) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white px-8 text-black">
+      <main className="flex min-h-screen items-center justify-center bg-[#f7faff] px-8 text-[#101a30]">
         <div className="text-center">
-          <h1 className="text-3xl font-medium">Product Not Found</h1>
-          <p className="mt-4 text-gray-500">The product you are looking for is unavailable.</p>
-          <button
-            type="button"
-            onClick={() => router.push("/product")}
-            className="mt-8 rounded-full bg-black px-8 py-4 text-sm text-white transition hover:bg-gray-700"
-          >
-            Back to Products
-          </button>
+          {loading ? (
+            <div className="mx-auto mb-5 h-10 w-10 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" />
+          ) : (
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#eaf3ff] text-3xl text-blue-600">
+              !
+            </div>
+          )}
+
+          <h1 className="text-3xl font-semibold">
+            {loading ? "Please Wait" : "Product Not Found"}
+          </h1>
+
+          <p className="mt-4 text-slate-500">{message}</p>
+
+          {!loading && (
+            <button
+              type="button"
+              onClick={() => router.push("/product")}
+              className={`${buttonClass} mt-8`}
+            >
+              Back to Products
+            </button>
+          )}
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white px-8 py-12 text-black md:px-16 md:py-16 lg:px-24">
+    <main className="min-h-screen bg-[#f7faff] px-6 py-12 text-[#101a30] md:px-16 md:py-16 lg:px-24">
       <div className="mx-auto max-w-7xl">
+
+        {/* Back Button */}
         <button
           type="button"
           onClick={() => router.back()}
-          className="mb-10 text-sm text-gray-500 transition hover:text-black"
+          className="mb-10 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-700"
         >
-          ← Back
+          <span>←</span>
+          Back
         </button>
 
-        <div className="grid items-center gap-12 md:grid-cols-2 md:gap-16">
-          <div className="relative aspect-square overflow-hidden bg-neutral-100">
+        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
+
+          {/* Product Image */}
+          <div className="group relative aspect-square overflow-hidden rounded-3xl border border-blue-100 bg-[#eaf3ff] shadow-sm">
             {product.image ? (
               <Image
                 src={product.image}
@@ -120,44 +117,89 @@ function ProductDetails({ id }: { id: string | null }) {
                 fill
                 unoptimized
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
+                className="object-cover transition duration-700 group-hover:scale-105"
               />
             ) : (
-              <div className="flex aspect-square items-center justify-center bg-neutral-200 text-sm text-neutral-500">
-                No image
+              <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                No image available
               </div>
             )}
           </div>
 
+          {/* Product Information */}
           <div className="flex flex-col items-start">
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-400">{product.category || "General"}</p>
-            <h1 className="mt-5 text-4xl font-medium tracking-tight md:text-5xl">{product.name}</h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-gray-500">{product.description}</p>
 
-            <div className="mt-8 border-y border-black/10 py-5">
-              <p className="text-sm text-gray-500">Quality products for your business and personal needs.</p>
+            <span className="rounded-full border border-blue-100 bg-[#eaf3ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
+              {product.category || "General"}
+            </span>
+
+            <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-[#101a30] md:text-5xl">
+              {product.name}
+            </h1>
+
+            <div className="mt-5 h-1 w-20 rounded-full bg-gradient-to-r from-blue-400 to-blue-700" />
+
+            <p className="mt-7 max-w-xl text-base leading-8 text-slate-600">
+              {product.description}
+            </p>
+
+            <div className="mt-8 w-full rounded-2xl border border-blue-100 bg-[#eaf3ff] p-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-700">
+                  ✓
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#101a30]">
+                    Product Quality
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                    Quality products for your business and personal needs.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {product.productUrl ? (
+            {/* Product Link */}
+            {product.productUrl && (
               <a
                 href={product.productUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-8 inline-flex rounded-full bg-black px-8 py-4 text-sm text-white transition duration-300 hover:-translate-y-1 hover:bg-gray-700"
+                className={`${buttonClass} mt-8 inline-flex items-center gap-3`}
               >
-                View Product →
+                View Product
+                <span>→</span>
               </a>
-            ) : null}
+            )}
 
             <button
               type="button"
               onClick={() => router.push("/product")}
-              className="mt-5 text-xs uppercase tracking-[0.2em] underline underline-offset-4 transition hover:text-gray-500"
+              className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 underline underline-offset-4 transition hover:text-blue-700"
             >
               Continue Exploring
             </button>
           </div>
         </div>
+
+        {/* Bottom Information */}
+        <div className="mt-20 rounded-3xl bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-10 text-center text-white md:px-16">
+          <h2 className="text-2xl font-semibold md:text-3xl">
+            Discover More of Our Products
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-blue-100">
+            Explore our product collection and find the right solutions for
+            your business and personal needs.
+          </p>
+          <button
+            type="button"
+            onClick={() => router.push("/product")}
+            className="mt-7 rounded-full bg-white px-8 py-3 text-sm font-semibold text-[#123f7a] transition hover:-translate-y-1 hover:bg-blue-50"
+          >
+            Explore Products →
+          </button>
+        </div>
+
       </div>
     </main>
   );
@@ -167,7 +209,7 @@ export default function DetailProdukPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-screen items-center justify-center bg-white text-gray-500">
+        <main className="flex min-h-screen items-center justify-center bg-[#f7faff] text-slate-500">
           Loading product...
         </main>
       }

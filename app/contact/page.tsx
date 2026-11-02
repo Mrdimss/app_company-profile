@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +10,6 @@ type FormStatus = {
 
 /* =========================================================
    REVEAL COMPONENT
-   Efek muncul saat elemen masuk ke layar
 ========================================================= */
 
 type RevealProps = {
@@ -40,9 +40,7 @@ function Reveal({
           observer.unobserve(element);
         }
       },
-      {
-        threshold: 0.15,
-      }
+      { threshold: 0.15 }
     );
 
     observer.observe(element);
@@ -53,15 +51,11 @@ function Reveal({
   return (
     <div
       ref={ref}
-      className={`
-        transition-all ease-out
-        ${
-          isVisible
-            ? "translate-y-0 opacity-100"
-            : "translate-y-12 opacity-0"
-        }
-        ${className}
-      `}
+      className={`transition-all ease-out ${
+        isVisible
+          ? "translate-y-0 opacity-100"
+          : "translate-y-12 opacity-0"
+      } ${className}`}
       style={{
         transitionDuration: `${duration}ms`,
         transitionDelay: `${delay}ms`,
@@ -72,7 +66,6 @@ function Reveal({
   );
 }
 
-
 /* =========================================================
    CONTACT PAGE
 ========================================================= */
@@ -82,13 +75,16 @@ export default function ContactPage() {
   const [status, setStatus] = useState<FormStatus | null>(null);
   const isSendingRef = useRef(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
     if (isSendingRef.current) return;
 
     const form = e.currentTarget;
     const formData = new FormData(form);
+
     const fields = {
       firstName: String(formData.get("firstName") ?? "").trim(),
       lastName: String(formData.get("lastName") ?? "").trim(),
@@ -100,32 +96,51 @@ export default function ContactPage() {
     };
 
     if (Object.values(fields).some((value) => !value)) {
-      setStatus({ type: "error", message: "Please complete all required fields." });
+      setStatus({
+        type: "error",
+        message: "Please complete all required fields.",
+      });
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
-      setStatus({ type: "error", message: "Please enter a valid email address." });
+      setStatus({
+        type: "error",
+        message: "Please enter a valid email address.",
+      });
       return;
     }
 
     isSendingRef.current = true;
     setIsSending(true);
     setStatus(null);
+
     const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), 30_000);
+
+    const timeoutId = window.setTimeout(
+      () => controller.abort(),
+      30_000
+    );
 
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(fields),
         signal: controller.signal,
       });
+
       const result: unknown = await response.json().catch(() => null);
+
       const responseBody =
         result && typeof result === "object"
-          ? (result as { ok?: unknown; error?: unknown; emailSent?: unknown })
+          ? (result as {
+              ok?: unknown;
+              error?: unknown;
+              emailSent?: unknown;
+            })
           : null;
 
       if (!response.ok || responseBody?.ok !== true) {
@@ -140,6 +155,7 @@ export default function ContactPage() {
       }
 
       form.reset();
+
       setStatus({
         type: "success",
         message:
@@ -150,7 +166,8 @@ export default function ContactPage() {
     } catch {
       setStatus({
         type: "error",
-        message: "We could not confirm whether your message was received. Please contact us before submitting again.",
+        message:
+          "We could not confirm whether your message was received. Please contact us before submitting again.",
       });
     } finally {
       window.clearTimeout(timeoutId);
@@ -160,60 +177,46 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-black">
-
+    <main className="min-h-screen bg-[#f7faff] text-[#101a30]">
 
       {/* =====================================================
           HERO
       ===================================================== */}
 
-      <section className="px-6 pt-16 pb-12 md:px-16 md:pt-24 lg:px-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#f7faff] via-[#eaf3ff] to-[#d8eaff] px-6 pb-16 pt-16 md:px-16 md:pb-20 md:pt-24 lg:px-24">
 
-        <div className="mx-auto max-w-7xl">
+        <div className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-[#b8e3ff]/40 blur-3xl" />
+
+        <div className="pointer-events-none absolute -bottom-20 left-10 h-64 w-64 rounded-full bg-blue-200/40 blur-3xl" />
+
+        <div className="relative mx-auto max-w-7xl">
 
           <Reveal delay={0}>
-
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+            <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
               Contact Us
             </p>
-
           </Reveal>
-
 
           <Reveal delay={150}>
-
             <h1 className="mt-5 max-w-5xl text-5xl font-medium leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl lg:text-[7rem]">
-
               Let&apos;s work
-
               <br />
-
-              <span className="text-gray-400">
+              <span className="bg-gradient-to-r from-blue-700 to-sky-400 bg-clip-text text-transparent">
                 together.
               </span>
-
             </h1>
-
           </Reveal>
 
-
           <Reveal delay={300}>
-
-            <p className="mt-8 max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg">
-
+            <p className="mt-8 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
               Have a question, business inquiry, or partnership
               opportunity? Get in touch with PT Dunia Sports
               Interprises and our team will be happy to assist you.
-
             </p>
-
           </Reveal>
 
         </div>
-
       </section>
-
-
 
       {/* =====================================================
           CONTACT CARDS
@@ -223,141 +226,304 @@ export default function ContactPage() {
 
         <div className="mx-auto max-w-7xl">
 
-          <div className="grid gap-4 md:grid-cols-3">
-
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
             {/* OFFICE */}
 
             <Reveal delay={0}>
-
-              <div className="group flex min-h-[190px] flex-col justify-between rounded-xl bg-neutral-100 p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-neutral-200">
+              <div className="group flex min-h-[190px] flex-col justify-between rounded-xl border border-blue-100 bg-[#eaf3ff] p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60">
 
                 <div className="flex items-start justify-between">
 
-                  <div className="grid h-11 w-11 place-items-center rounded-full bg-white text-lg">
+                  <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f7faff] text-lg text-blue-700">
                     ♧
                   </div>
 
-                  <span className="text-xl transition-transform duration-300 group-hover:translate-x-1">
+                  <span className="text-xl text-blue-700 transition-transform duration-300 group-hover:translate-x-1">
                     →
                   </span>
 
                 </div>
 
-
                 <div>
-
-                  <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
                     Our Office
                   </p>
 
-                  <p className="mt-3 text-sm leading-relaxed text-gray-700">
-                    Jl. Agung Timur 10 No. 13–16, RT 10/RW 14, Sunter Jaya, Tanjung Priok District,
-                     North Jakarta, Special Capital Region of Jakarta 14350, Indonesia.
+                  <p className="mt-3 text-sm leading-relaxed text-slate-700">
+                    Jl. Agung Timur 10 No. 13–16, RT 10/RW 14,
+                    Sunter Jaya, Tanjung Priok District, North
+                    Jakarta, Special Capital Region of Jakarta
+                    14350, Indonesia.
                   </p>
-
                 </div>
 
               </div>
-
             </Reveal>
 
+            {/* WHATSAPP */}
 
+            <Reveal delay={150}>
+              <a
+                href="https://wa.me/919891112185"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Chat with us on WhatsApp"
+                className="group flex min-h-[190px] flex-col justify-between rounded-xl border border-blue-100 bg-[#eaf3ff] p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
+              >
 
-            {/* PHONE */}
+                <div className="flex items-start justify-between">
 
-            
-<Reveal delay={150}>
-  <a
-    href="https://wa.me/919891112185"
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label="Chat with us on WhatsApp"
-    className="group flex min-h-[190px] flex-col justify-between rounded-xl bg-neutral-100 p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-neutral-200"
-  >
-    <div className="flex items-start justify-between">
-      <div className="grid h-11 w-11 place-items-center rounded-full bg-white text-[#25D366] transition-colors duration-300 group-hover:bg-[#25D366] group-hover:text-white">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="h-6 w-6"
-          aria-hidden="true"
-        >
-          <path d="M20.52 3.48A11.82 11.82 0 0 0 12.08 0C5.52 0 .18 5.34.18 11.9c0 2.1.55 4.15 1.6 5.96L.08 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45h.01c6.56 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.46-8.42ZM12.08 21.8h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.38a9.86 9.86 0 0 1-1.52-5.26c0-5.46 4.44-9.9 9.91-9.9a9.83 9.83 0 0 1 7 2.9 9.83 9.83 0 0 1 2.9 7c0 5.46-4.44 9.9-9.9 9.9Zm5.43-7.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.5 1.7.64.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z" />
-        </svg>
-      </div>
+                  <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f7faff] text-[#25D366] transition-colors duration-300 group-hover:bg-[#25D366] group-hover:text-white">
 
-      <span className="text-xl transition-transform duration-300 group-hover:translate-x-1">
-        →
-      </span>
-    </div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="h-6 w-6"
+                      aria-hidden="true"
+                    >
+                      <path d="M20.52 3.48A11.82 11.82 0 0 0 12.08 0C5.52 0 .18 5.34.18 11.9c0 2.1.55 4.15 1.6 5.96L.08 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45h.01c6.56 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.46-8.42ZM12.08 21.8h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.38a9.86 9.86 0 0 1-1.52-5.26c0-5.46 4.44-9.9 9.91-9.9a9.83 9.83 0 0 1 7 2.9 9.83 9.83 0 0 1 2.9 7c0 5.46-4.44 9.9-9.9 9.9Zm5.43-7.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.5 1.7.64.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z" />
+                    </svg>
 
-    <div>
-      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-        Call Us
-      </p>
+                  </div>
 
-      <p className="mt-3 text-sm text-gray-700">
-        +91 - 9891112185
-      </p>
-    </div>
-  </a>
-</Reveal>
+                  <span className="text-xl text-blue-700 transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
 
+                </div>
 
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
+                    WhatsApp
+                  </p>
 
+                  <p className="mt-3 text-sm text-slate-700">
+                    +62 878-1185-1890
+                  </p>
+                </div>
+
+              </a>
+            </Reveal>
 
             {/* EMAIL */}
 
-            
-<Reveal delay={300}>
-  <a
-    href="mailto:info@girik.com"
-    aria-label="Email Us: info@girik.com"
-    className="group flex min-h-[190px] flex-col justify-between rounded-xl bg-neutral-100 p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-neutral-200"
-  >
-    <div className="flex items-start justify-between">
-      <div className="grid h-11 w-11 place-items-center rounded-full bg-white text-blue-600 transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="h-5 w-5"
-          aria-hidden="true"
-        >
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <path d="m3 7 9 6 9-6" />
-        </svg>
-      </div>
+            <Reveal delay={300}>
+              <a
+                href="mailto:info@girik.com"
+                aria-label="Email Us: info@girik.com"
+                className="group flex min-h-[190px] flex-col justify-between rounded-xl border border-blue-100 bg-[#eaf3ff] p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
+              >
 
-      <span className="text-xl transition-transform duration-300 group-hover:translate-x-1">
-        →
-      </span>
-    </div>
+                <div className="flex items-start justify-between">
 
-    <div>
-      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-        Email Us
-      </p>
+                  <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f7faff] text-blue-700 transition-all duration-300 group-hover:bg-blue-700 group-hover:text-white">
 
-      <p className="mt-3 break-words text-sm text-gray-700">
-        info@girik.com
-      </p>
-    </div>
-  </a>
-</Reveal>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    >
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="m3 7 9 6 9-6" />
+                    </svg>
 
-</div>
-</div>
-</section>
+                  </div>
 
+                  <span className="text-xl text-blue-700 transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
 
+                </div>
 
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
+                    Email Us
+                  </p>
+
+                  <p className="mt-3 break-words text-sm text-slate-700">
+                    info@girik.com
+                  </p>
+                </div>
+
+              </a>
+            </Reveal>
+
+            {/* INSTAGRAM */}
+
+            <Reveal delay={450}>
+              <a
+                href="https://www.instagram.com/girik.indo.store?dlrf=MTRpY2Fob3AyazlsdQ=="
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Visit our Instagram"
+                className="group flex min-h-[190px] flex-col justify-between rounded-xl border border-blue-100 bg-[#eaf3ff] p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
+              >
+
+                <div className="flex items-start justify-between">
+
+                  <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f7faff] text-pink-600 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-purple-600 group-hover:via-pink-500 group-hover:to-orange-400 group-hover:text-white">
+
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-6 w-6"
+                      aria-hidden="true"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="5" />
+                      <circle cx="12" cy="12" r="4" />
+                      <circle
+                        cx="17.5"
+                        cy="6.5"
+                        r="0.8"
+                        fill="currentColor"
+                      />
+                    </svg>
+
+                  </div>
+
+                  <span className="text-xl text-blue-700 transition-transform duration-300 group-hover:translate-x-1">
+                    ↗
+                  </span>
+
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
+                    Follow Us
+                  </p>
+
+                  <p className="mt-3 text-sm text-slate-700">
+                    girik.indo.store
+                  </p>
+                </div>
+
+              </a>
+            </Reveal>
+
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          MARKETPLACE
+      ===================================================== */}
+
+      <section className="px-6 py-16 md:px-16 lg:px-24">
+
+        <div className="mx-auto max-w-7xl">
+
+          <Reveal delay={0}>
+            <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
+              Our Marketplace
+            </p>
+          </Reveal>
+
+          <Reveal delay={150}>
+            <h2 className="mt-4 text-4xl font-medium text-[#101a30] md:text-6xl">
+              Shop With Us
+            </h2>
+          </Reveal>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
+
+            {/* SHOPEE */}
+
+            <Reveal delay={0}>
+              <a
+                href="https://shopee.co.id/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block rounded-2xl border border-blue-100 bg-[#eaf3ff] p-8 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
+              >
+
+                <div className="flex items-center justify-between">
+
+                  <span className="text-2xl font-semibold text-[#EE4D2D]">
+                    Shopee
+                  </span>
+
+                  <span className="text-2xl text-blue-700 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                    ↗
+                  </span>
+
+                </div>
+
+                <p className="mt-6 text-xs uppercase tracking-widest text-blue-700">
+                  Operating Hours
+                </p>
+
+                <p className="mt-2 text-sm text-slate-700">
+                  Monday – Saturday
+                </p>
+
+                <p className="text-sm text-slate-700">
+                  09:00 AM – 05:00 PM WIB
+                </p>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Sunday: Closed
+                </p>
+
+              </a>
+            </Reveal>
+
+            {/* TOKOPEDIA */}
+
+            <Reveal delay={150}>
+              <a
+                href="https://www.tokopedia.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block rounded-2xl border border-blue-100 bg-[#eaf3ff] p-8 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
+              >
+
+                <div className="flex items-center justify-between">
+
+                  <span className="text-2xl font-semibold text-[#03AC0E]">
+                    Tokopedia
+                  </span>
+
+                  <span className="text-2xl text-blue-700 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                    ↗
+                  </span>
+
+                </div>
+
+                <p className="mt-6 text-xs uppercase tracking-widest text-blue-700">
+                  Operating Hours
+                </p>
+
+                <p className="mt-2 text-sm text-slate-700">
+                  Monday – Saturday
+                </p>
+
+                <p className="text-sm text-slate-700">
+                  09:00 AM – 05:00 PM WIB
+                </p>
+
+                <p className="mt-1 text-sm text-slate-500">
+                  Sunday: Closed
+                </p>
+
+              </a>
+            </Reveal>
+
+          </div>
+        </div>
+      </section>
 
       {/* =====================================================
           LOCATION
@@ -367,128 +533,90 @@ export default function ContactPage() {
 
         <div className="mx-auto max-w-7xl">
 
-
           <Reveal delay={0}>
-
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+            <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
               Our Location
             </p>
-
           </Reveal>
 
-
           <Reveal delay={150}>
-
-            <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
-
+            <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight text-[#101a30] md:text-6xl">
               Our team is ready to
               <br />
               work with you.
-
             </h2>
-
           </Reveal>
 
-
           <Reveal delay={300}>
-
-            <p className="mt-6 max-w-2xl leading-relaxed text-gray-500">
-
+            <p className="mt-6 max-w-2xl leading-relaxed text-slate-600">
               Visit our office or contact us to discuss your
               business, product distribution, and partnership
               opportunities.
-
             </p>
-
           </Reveal>
 
-
-
-          {/* INDONESIA / MAIN OFFICE */}
+          {/* MAIN OFFICE */}
 
           <Reveal delay={450}>
-
-            <div className="mt-14 border-t border-black/10 py-8">
+            <div className="mt-14 border-t border-blue-200 py-8">
 
               <div className="grid gap-6 md:grid-cols-[180px_1fr_auto] md:items-center">
 
-                <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+                <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
                   Rukan
                 </p>
 
-
                 <div>
-
-                  <p className="text-lg font-medium">
+                  <p className="text-lg font-medium text-[#101a30]">
                     Girik Office
                   </p>
 
-                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
-
-                    No.13-16, Sector-10,
-                    Tanjung Priok, Jakarta, 14350, Indonesia.
-
+                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
+                    No.13-16, Sector-10, Tanjung Priok,
+                    Jakarta, 14350, Indonesia.
                   </p>
-
                 </div>
 
-
-                <span className="text-2xl text-gray-400">
+                <span className="text-2xl text-blue-400">
                   →
                 </span>
 
               </div>
-
             </div>
-
           </Reveal>
-
-
 
           {/* GLOBAL NETWORK */}
 
           <Reveal delay={600}>
-
-            <div className="border-t border-black/10 py-8">
+            <div className="border-t border-blue-200 py-8">
 
               <div className="grid gap-6 md:grid-cols-[180px_1fr_auto] md:items-center">
 
-                <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+                <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
                   Business Network
                 </p>
 
-
                 <div>
-
-                  <p className="text-lg font-medium">
+                  <p className="text-lg font-medium text-[#101a30]">
                     Global Distribution
                   </p>
 
-                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
-
+                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
                     Supporting product sourcing, marketing,
                     logistics, and distribution activities.
-
                   </p>
-
                 </div>
 
-
-                <span className="text-2xl text-gray-400">
+                <span className="text-2xl text-blue-400">
                   →
                 </span>
 
               </div>
-
             </div>
-
           </Reveal>
 
         </div>
-
       </section>
-
-
 
       {/* =====================================================
           CONTACT FORM
@@ -498,68 +626,48 @@ export default function ContactPage() {
 
         <div className="mx-auto max-w-7xl">
 
-
           <Reveal delay={0}>
-
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+            <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
               Contact Us Form
             </p>
-
           </Reveal>
 
-
           <Reveal delay={150}>
-
-            <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
-
+            <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight text-[#101a30] md:text-6xl">
               Ready to work
               <br />
               with us?
-
             </h2>
-
           </Reveal>
-
 
           <Reveal delay={300}>
-
-            <p className="mt-6 max-w-2xl leading-relaxed text-gray-500">
-
+            <p className="mt-6 max-w-2xl leading-relaxed text-slate-600">
               Send us a message and tell us how we can help
               your business.
-
             </p>
-
           </Reveal>
-
-
 
           {/* FORM */}
 
           <Reveal delay={450}>
-
             <form
               onSubmit={handleSubmit}
-              className="mt-12 overflow-hidden rounded-2xl border border-black/10"
+              className="mt-12 overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-xl shadow-blue-100/40"
             >
-
 
               {/* FORM HEADER */}
 
-              <div className="flex items-center justify-between bg-[#0b4a43] px-6 py-5 text-white md:px-8">
+              <div className="flex items-center justify-between bg-gradient-to-r from-[#0b1f3a] to-[#1e40af] px-6 py-5 text-white md:px-8">
 
                 <div>
-
                   <p className="text-lg font-medium">
                     Schedule a Free Consultation
                   </p>
 
-                  <p className="mt-1 text-xs text-white/60">
+                  <p className="mt-1 text-xs text-blue-100/80">
                     Tell us about your business and your needs.
                   </p>
-
                 </div>
-
 
                 <span className="text-2xl">
                   ↗
@@ -567,18 +675,14 @@ export default function ContactPage() {
 
               </div>
 
-
-
               {/* FORM CONTENT */}
 
-              <div className="grid gap-6 p-6 md:grid-cols-2 md:p-8">
-
+              <div className="grid gap-6 bg-white p-6 md:grid-cols-2 md:p-8">
 
                 {/* FIRST NAME */}
 
                 <div>
-
-                  <label className="mb-2 block text-xs text-gray-600">
+                  <label className="mb-2 block text-xs font-medium text-slate-700">
                     First name <span className="text-red-500">*</span>
                   </label>
 
@@ -589,18 +693,14 @@ export default function ContactPage() {
                     maxLength={80}
                     autoComplete="given-name"
                     placeholder="First name"
-                    className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
+                    className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
-
                 </div>
-
-
 
                 {/* LAST NAME */}
 
                 <div>
-
-                  <label className="mb-2 block text-xs text-gray-600">
+                  <label className="mb-2 block text-xs font-medium text-slate-700">
                     Last name <span className="text-red-500">*</span>
                   </label>
 
@@ -611,18 +711,14 @@ export default function ContactPage() {
                     maxLength={80}
                     autoComplete="family-name"
                     placeholder="Last name"
-                    className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
+                    className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
-
                 </div>
-
-
 
                 {/* EMAIL */}
 
                 <div className="md:col-span-2">
-
-                  <label className="mb-2 block text-xs text-gray-600">
+                  <label className="mb-2 block text-xs font-medium text-slate-700">
                     Email <span className="text-red-500">*</span>
                   </label>
 
@@ -633,18 +729,14 @@ export default function ContactPage() {
                     maxLength={254}
                     autoComplete="email"
                     placeholder="your@email.com"
-                    className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
+                    className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
-
                 </div>
-
-
 
                 {/* PHONE */}
 
                 <div>
-
-                  <label className="mb-2 block text-xs text-gray-600">
+                  <label className="mb-2 block text-xs font-medium text-slate-700">
                     Phone <span className="text-red-500">*</span>
                   </label>
 
@@ -654,19 +746,15 @@ export default function ContactPage() {
                     required
                     maxLength={40}
                     autoComplete="tel"
-                    placeholder="+91"
-                    className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
+                    placeholder="+62"
+                    className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
-
                 </div>
-
-
 
                 {/* COMPANY */}
 
                 <div>
-
-                  <label className="mb-2 block text-xs text-gray-600">
+                  <label className="mb-2 block text-xs font-medium text-slate-700">
                     Company <span className="text-red-500">*</span>
                   </label>
 
@@ -677,18 +765,14 @@ export default function ContactPage() {
                     maxLength={120}
                     autoComplete="organization"
                     placeholder="Company name"
-                    className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
+                    className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
-
                 </div>
-
-
 
                 {/* COUNTRY */}
 
                 <div className="md:col-span-2">
-
-                  <label className="mb-2 block text-xs text-gray-600">
+                  <label className="mb-2 block text-xs font-medium text-slate-700">
                     Country <span className="text-red-500">*</span>
                   </label>
 
@@ -699,18 +783,14 @@ export default function ContactPage() {
                     maxLength={100}
                     autoComplete="country-name"
                     placeholder="Country"
-                    className="w-full border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
+                    className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
-
                 </div>
-
-
 
                 {/* MESSAGE */}
 
                 <div className="md:col-span-2">
-
-                  <label className="mb-2 block text-xs text-gray-600">
+                  <label className="mb-2 block text-xs font-medium text-slate-700">
                     Message <span className="text-red-500">*</span>
                   </label>
 
@@ -720,12 +800,9 @@ export default function ContactPage() {
                     rows={7}
                     maxLength={5000}
                     placeholder="To better assist you, please describe how we can help."
-                    className="w-full resize-none border border-gray-200 px-4 py-4 text-sm outline-none transition focus:border-black"
+                    className="w-full resize-none rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
-
                 </div>
-
-
 
                 {/* SUBMIT */}
 
@@ -734,16 +811,17 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSending}
-                    className="rounded-full bg-black px-8 py-4 text-sm text-white transition duration-300 hover:-translate-y-1 hover:bg-gray-800"
+                    className="rounded-full bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-4 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isSending ? "Sending..." : "Send Message →"}
                   </button>
 
-
                   {status && (
                     <p
                       className={`mt-4 text-sm ${
-                        status.type === "success" ? "text-green-600" : "text-red-600"
+                        status.type === "success"
+                          ? "text-green-600"
+                          : "text-red-600"
                       }`}
                       role="status"
                       aria-live="polite"
@@ -755,16 +833,11 @@ export default function ContactPage() {
                 </div>
 
               </div>
-
             </form>
-
           </Reveal>
 
         </div>
-
       </section>
-
-
 
       {/* =====================================================
           GOOGLE MAPS
@@ -774,134 +847,107 @@ export default function ContactPage() {
 
         <div className="mx-auto max-w-7xl">
 
-
-          {/* MAP TITLE */}
-
           <Reveal delay={0}>
-
             <div className="mb-8">
 
-              <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+              <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
                 Find Us
               </p>
 
-              <h2 className="mt-4 text-4xl font-medium tracking-tight md:text-6xl">
+              <h2 className="mt-4 text-4xl font-medium tracking-tight text-[#101a30] md:text-6xl">
                 Visit Our Office
               </h2>
 
-              <p className="mt-4 max-w-2xl text-gray-500">
-              No.13-16, Sector-10, Tanjung Priok, Jakarta, 14350, Indonesia.
+              <p className="mt-4 max-w-2xl text-slate-600">
+                No.13-16, Sector-10, Tanjung Priok, Jakarta,
+                14350, Indonesia.
               </p>
 
             </div>
-
           </Reveal>
-
-
 
           {/* MAP */}
 
           <Reveal delay={200}>
-
-            <div className="overflow-hidden rounded-2xl border border-black/10">
+            <div className="overflow-hidden rounded-2xl border border-blue-100 shadow-lg shadow-blue-100/40">
 
               <div className="relative h-[350px] w-full md:h-[500px]">
 
                 <iframe
-                 src="https://www.google.com/maps?q=Rukan+Sunter+Permai@-6.1385338,106.8769308&output=embed"
-                 width="100%"
-                 height="100%"
-                 style={{ border: 0 }}
-                 loading="lazy"
+                  src="https://www.google.com/maps?q=Rukan+Sunter+Permai@-6.1385338,106.8769308&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   allowFullScreen
                   title="PT Dunia Sports Interprises Location"
-                  />
-
+                />
 
               </div>
 
-
-
               {/* MAP INFORMATION */}
 
-              <div className="flex flex-col gap-5 bg-neutral-100 p-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col gap-5 bg-[#eaf3ff] p-6 md:flex-row md:items-center md:justify-between">
 
                 <div>
-
-                  <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+                  <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
                     Office Address
                   </p>
 
-                  <p className="mt-2 text-sm text-gray-700">
-                   No.13-16, Sector-10,
-                    Tanjung Priok, Jakarta, 14350, Indonesia.
+                  <p className="mt-2 text-sm text-slate-700">
+                    No.13-16, Sector-10, Tanjung Priok,
+                    Jakarta, 14350, Indonesia.
                   </p>
-
                 </div>
-
-
-
-                {/* GOOGLE MAPS BUTTON */}
 
                 <a
                   href="https://www.google.com/maps/place/Rukan+Sunter+Permai/@-6.1385338,106.8743505,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69f53f52449e7b:0xd1053195255aa5e!8m2!3d-6.1385338!4d106.8769308!16s%2Fg%2F11gjq15v8b?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-full bg-black px-7 py-4 text-sm text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800"
+                  className="inline-flex items-center justify-center rounded-full bg-blue-700 px-7 py-4 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-lg hover:shadow-blue-200"
                 >
-
                   Open in Google Maps
 
                   <span className="ml-4">
                     →
                   </span>
-
                 </a>
 
               </div>
-
             </div>
-
           </Reveal>
 
         </div>
-
       </section>
-
-
 
       {/* =====================================================
           BOTTOM CTA
       ===================================================== */}
 
-      <section className="bg-black px-6 py-20 text-white md:px-16 md:py-28 lg:px-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0b1730] via-[#123f7a] to-blue-700 px-6 py-20 text-white md:px-16 md:py-28 lg:px-24">
 
-        <div className="mx-auto max-w-7xl">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-blue-400/20 blur-3xl" />
+
+        <div className="pointer-events-none absolute -bottom-20 left-20 h-64 w-64 rounded-full bg-sky-300/20 blur-3xl" />
+
+        <div className="relative mx-auto max-w-7xl">
 
           <Reveal delay={0}>
-
-            <p className="text-xs uppercase tracking-[0.3em] text-gray-400">
+            <p className="text-xs uppercase tracking-[0.3em] text-blue-200">
               Let&apos;s Connect
             </p>
-
           </Reveal>
 
-
           <Reveal delay={200}>
-
-            <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
-
+            <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight text-white md:text-6xl">
               Let&apos;s build meaningful
               <br />
               business opportunities together.
-
             </h2>
-
           </Reveal>
 
         </div>
-
       </section>
 
     </main>
