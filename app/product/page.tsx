@@ -43,6 +43,7 @@ function Reveal({
     );
 
     observer.observe(element);
+
     return () => observer.disconnect();
   }, []);
 
@@ -64,10 +65,13 @@ function Reveal({
 
 export default function ProductPage() {
   const router = useRouter();
+
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // LOAD PRODUCTS
   useEffect(() => {
     async function loadProducts() {
       try {
@@ -79,7 +83,8 @@ export default function ProductPage() {
 
         const result = await response.json();
         setProducts(result.items ?? []);
-      } catch {
+      } catch (error) {
+        console.error("Failed to load products:", error);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -89,6 +94,7 @@ export default function ProductPage() {
     void loadProducts();
   }, []);
 
+  // CATEGORY LIST
   const categories = useMemo(
     () => [
       "All",
@@ -103,15 +109,34 @@ export default function ProductPage() {
     [products]
   );
 
-  const filteredProducts =
-    activeCategory === "All"
-      ? products
-      : products.filter(
-          (product) => product.category === activeCategory
-        );
+  // SEARCH + CATEGORY FILTER
+  const filteredProducts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
 
+    return products.filter((product) => {
+      const matchesCategory =
+        activeCategory === "All" ||
+        product.category === activeCategory;
+
+      const matchesSearch =
+        !query ||
+        product.name.toLowerCase().includes(query) ||
+        (product.category ?? "").toLowerCase().includes(query) ||
+        (product.description ?? "").toLowerCase().includes(query);
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [products, activeCategory, searchQuery]);
+
+  // OPEN PRODUCT DETAIL
   function openDetail(productId: string) {
-    router.push(`/DetailProduk?id=${productId}`);
+    router.push(`/DetailProduk?id=${encodeURIComponent(productId)}`);
+  }
+
+  // RESET SEARCH AND CATEGORY
+  function resetFilters() {
+    setSearchQuery("");
+    setActiveCategory("All");
   }
 
   return (
@@ -246,6 +271,70 @@ export default function ProductPage() {
         </div>
       </section>
 
+      {/* SEARCH BAR */}
+      <section className="relative px-6 pt-10 md:px-16 lg:px-24">
+        <div className="mx-auto max-w-7xl">
+          <Reveal>
+            <div className="mx-auto max-w-2xl">
+              <label
+                htmlFor="product-search"
+                className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-[#1768ac]"
+              >
+                Search Our Products
+              </label>
+
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-5 flex items-center text-[#5893c5]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-4-4" />
+                  </svg>
+                </span>
+
+                <input
+                  id="product-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by product name, category, or description..."
+                  className="w-full rounded-full border border-blue-200 bg-white/80 py-4 pl-14 pr-14 text-sm text-[#102b59] shadow-sm outline-none backdrop-blur-md transition duration-300 placeholder:text-[#8ba8c5] focus:border-[#2589d8] focus:bg-white focus:ring-4 focus:ring-blue-100"
+                />
+
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    aria-label="Clear search"
+                    className="absolute inset-y-0 right-5 text-2xl text-[#6684a6] transition hover:text-[#102b59]"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+
+              {searchQuery.trim() && (
+                <p className="mt-3 text-xs text-[#6684a6]">
+                  Search results for:{" "}
+                  <span className="font-semibold text-[#1768ac]">
+                    {searchQuery}
+                  </span>
+                </p>
+              )}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* PRODUCTS GRID */}
       <section className="relative px-6 py-16 md:px-16 md:py-20 lg:px-24">
         <div className="relative z-10 mx-auto max-w-7xl">
@@ -255,6 +344,7 @@ export default function ProductPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#4b85b8]">
                   Our Collection
                 </p>
+
                 <p className="mt-2 text-sm text-[#45658a]">
                   {loading
                     ? "Loading products..."
@@ -262,7 +352,7 @@ export default function ProductPage() {
                         filteredProducts.length === 1
                           ? "Product"
                           : "Products"
-                      }`}
+                      } found`}
                 </p>
               </div>
 
@@ -272,6 +362,7 @@ export default function ProductPage() {
             </div>
           </Reveal>
 
+          {/* LOADING */}
           {loading ? (
             <div
               className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
@@ -292,94 +383,102 @@ export default function ProductPage() {
               ))}
             </div>
           ) : (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredProducts.map((product, index) => (
-                <Reveal
-                  key={product.id}
-                  delay={Math.min(index * 100, 400)}
-                  duration={800}
-                >
-                  <article className="product-card group h-full overflow-hidden rounded-3xl border border-white/80 bg-white/65 p-3 shadow-[0_8px_30px_rgba(16,43,89,0.04)] backdrop-blur-md">
-                    {/* PRODUCT IMAGE */}
-                    <button
-                      type="button"
-                      onClick={() => openDetail(product.id)}
-                      aria-label={`View ${product.name} details`}
-                      className="relative block aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-100 to-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2589d8] focus-visible:ring-offset-2"
+            <>
+              {/* PRODUCT LIST */}
+              {filteredProducts.length > 0 && (
+                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {filteredProducts.map((product, index) => (
+                    <Reveal
+                      key={product.id}
+                      delay={Math.min(index * 100, 400)}
+                      duration={800}
                     >
-                      {product.image ? (
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          unoptimized
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="product-image object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm text-[#45658a]">
-                          No image available
-                        </div>
-                      )}
-
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#102b59]/20 via-transparent to-transparent opacity-60" />
-
-                      <span className="product-arrow absolute bottom-4 right-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/90 text-lg text-[#1768ac] shadow-md">
-                        ↗
-                      </span>
-                    </button>
-
-                    {/* PRODUCT INFORMATION */}
-                    <div className="px-3 pb-4 pt-5">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5893c5]">
-                        {product.category || "General"}
-                      </p>
-
-                      <h2 className="mt-2 text-xl font-semibold leading-snug text-[#102b59]">
-                        {product.name}
-                      </h2>
-
-                      <div className="mt-5 border-t border-blue-100 pt-4">
+                      <article className="product-card group h-full overflow-hidden rounded-3xl border border-white/80 bg-white/65 p-3 shadow-[0_8px_30px_rgba(16,43,89,0.04)] backdrop-blur-md">
+                        {/* PRODUCT IMAGE */}
                         <button
                           type="button"
                           onClick={() => openDetail(product.id)}
-                          className="group/link inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#1768ac] transition-colors hover:text-[#102b59] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2589d8] focus-visible:ring-offset-4"
+                          aria-label={`View ${product.name} details`}
+                          className="relative block aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-100 to-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2589d8] focus-visible:ring-offset-2"
                         >
-                          View Product
-                          <span className="transition-transform duration-300 group-hover/link:translate-x-1">
-                            →
+                          {product.image ? (
+                            <Image
+                              src={product.image}
+                              alt={product.name}
+                              fill
+                              unoptimized
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="product-image object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-sm text-[#45658a]">
+                              No image available
+                            </div>
+                          )}
+
+                          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#102b59]/20 via-transparent to-transparent opacity-60" />
+
+                          <span className="product-arrow absolute bottom-4 right-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/90 text-lg text-[#1768ac] shadow-md">
+                            ↗
                           </span>
                         </button>
-                      </div>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
-            </div>
-          )}
 
-          {!loading && filteredProducts.length === 0 && (
-            <div className="rounded-3xl border border-dashed border-blue-300 bg-white/50 px-6 py-20 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-2xl text-[#1768ac]">
-                ◇
-              </div>
-              <h2 className="mt-5 text-xl font-semibold text-[#102b59]">
-                No products found
-              </h2>
-              <p className="mt-2 text-sm leading-7 text-[#45658a]">
-                There are no products in this category yet.
-              </p>
+                        {/* PRODUCT INFORMATION */}
+                        <div className="px-3 pb-4 pt-5">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5893c5]">
+                            {product.category || "General"}
+                          </p>
 
-              {activeCategory !== "All" && (
-                <button
-                  type="button"
-                  onClick={() => setActiveCategory("All")}
-                  className="mt-6 rounded-full bg-[#102b59] px-6 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-[#1768ac]"
-                >
-                  View All Products
-                </button>
+                          <h2 className="mt-2 text-xl font-semibold leading-snug text-[#102b59]">
+                            {product.name}
+                          </h2>
+
+                          <div className="mt-5 border-t border-blue-100 pt-4">
+                            <button
+                              type="button"
+                              onClick={() => openDetail(product.id)}
+                              className="group/link inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#1768ac] transition-colors hover:text-[#102b59] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2589d8] focus-visible:ring-offset-4"
+                            >
+                              View Product
+                              <span className="transition-transform duration-300 group-hover/link:translate-x-1">
+                                →
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    </Reveal>
+                  ))}
+                </div>
               )}
-            </div>
+
+              {/* EMPTY SEARCH RESULT */}
+              {filteredProducts.length === 0 && (
+                <div className="rounded-3xl border border-dashed border-blue-300 bg-white/50 px-6 py-20 text-center">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-2xl text-[#1768ac]">
+                    ◇
+                  </div>
+
+                  <h2 className="mt-5 text-xl font-semibold text-[#102b59]">
+                    No products found
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-7 text-[#45658a]">
+                    {searchQuery.trim()
+                      ? `No products match "${searchQuery}". Try another keyword.`
+                      : "There are no products in this category yet."}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className="mt-6 rounded-full bg-[#102b59] px-6 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-[#1768ac]"
+                  >
+                    View All Products
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

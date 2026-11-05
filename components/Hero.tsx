@@ -50,12 +50,12 @@ export default function Hero() {
             }`}
             style={{ transitionDelay: "120ms" }}
           >
-            We distributor
+            WE DISTRIBUTOR
             <br />
             <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-sky-500 bg-clip-text text-transparent">
-              sports
+              SPORTS
             </span>{" "}
-            products.
+            PRODUCTS.
           </h1>
 
           {/* Description */}
@@ -67,7 +67,7 @@ export default function Hero() {
             }`}
             style={{ transitionDelay: "250ms" }}
           >
-            We distribute quality sports and beauty products with reliability and care.
+            We distribute quality sports products with reliability and care.
           </p>
 
           {/* Buttons */}

@@ -12,21 +12,27 @@ type ProductItem = {
   description: string;
   image?: string | null;
   productUrl?: string | null;
+  tokopediaUrl?: string | null;
 };
 
 function ProductDetails({ id }: { id: string | null }) {
   const router = useRouter();
+
   const [product, setProduct] = useState<ProductItem | null>(null);
   const [loading, setLoading] = useState(id !== null);
 
   useEffect(() => {
     if (!id) return;
 
+    const controller = new AbortController();
     let isCurrent = true;
 
     async function loadProduct() {
       try {
-        const response = await fetch(`/api/products/${id}`);
+        const response = await fetch(`/api/products/${id}`, {
+          signal: controller.signal,
+        });
+
         const data = await response.json();
 
         if (!isCurrent) return;
@@ -38,9 +44,13 @@ function ProductDetails({ id }: { id: string | null }) {
 
         setProduct(data.item ?? null);
       } catch {
-        if (isCurrent) setProduct(null);
+        if (isCurrent && !controller.signal.aborted) {
+          setProduct(null);
+        }
       } finally {
-        if (isCurrent) setLoading(false);
+        if (isCurrent) {
+          setLoading(false);
+        }
       }
     }
 
@@ -48,18 +58,19 @@ function ProductDetails({ id }: { id: string | null }) {
 
     return () => {
       isCurrent = false;
+      controller.abort();
     };
   }, [id]);
 
   const buttonClass =
-    "rounded-full bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-4 text-sm font-medium text-white shadow-lg shadow-blue-900/15 transition duration-300 hover:-translate-y-1 hover:shadow-xl";
+    "inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-4 text-sm font-medium text-white shadow-lg shadow-blue-900/15 transition duration-300 hover:-translate-y-1 hover:shadow-xl";
 
   if (!id || loading || !product) {
     const message = !id
       ? "The product you are looking for is unavailable."
       : loading
-      ? "Loading product..."
-      : "The product you are looking for is unavailable.";
+        ? "Loading product..."
+        : "The product you are looking for is unavailable.";
 
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f7faff] px-8 text-[#101a30]">
@@ -143,15 +154,18 @@ function ProductDetails({ id }: { id: string | null }) {
               {product.description}
             </p>
 
+            {/* Product Quality */}
             <div className="mt-8 w-full rounded-2xl border border-blue-100 bg-[#eaf3ff] p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-700">
                   ✓
                 </div>
+
                 <div>
                   <h3 className="font-semibold text-[#101a30]">
                     Product Quality
                   </h3>
+
                   <p className="mt-1 text-sm leading-relaxed text-slate-600">
                     Quality products for your business and personal needs.
                   </p>
@@ -159,19 +173,48 @@ function ProductDetails({ id }: { id: string | null }) {
               </div>
             </div>
 
-            {/* Product Link */}
-            {product.productUrl && (
-              <a
-                href={product.productUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${buttonClass} mt-8 inline-flex items-center gap-3`}
-              >
-                View Product
-                <span>→</span>
-              </a>
+            {/* Marketplace Buttons */}
+            {(product.productUrl || product.tokopediaUrl) && (
+              <div className="mt-8 w-full">
+                <h3 className="mb-4 text-sm font-semibold text-[#101a30]">
+                  Buy This Product
+                </h3>
+
+                <div className="flex flex-wrap gap-4">
+
+                  {/* Shopee Button */}
+                  {product.productUrl && (
+                    <a
+                      href={product.productUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={buttonClass}
+                    >
+                      <span>🛒</span>
+                      Buy on Shopee
+                      <span>↗</span>
+                    </a>
+                  )}
+
+                  {/* Tokopedia Button */}
+                  {product.tokopediaUrl && (
+                    <a
+                      href={product.tokopediaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={buttonClass}
+                    >
+                      <span>🛍️</span>
+                      Buy on Tokopedia
+                      <span>↗</span>
+                    </a>
+                  )}
+
+                </div>
+              </div>
             )}
 
+            {/* Continue Exploring */}
             <button
               type="button"
               onClick={() => router.push("/product")}
@@ -179,18 +222,22 @@ function ProductDetails({ id }: { id: string | null }) {
             >
               Continue Exploring
             </button>
+
           </div>
         </div>
 
         {/* Bottom Information */}
         <div className="mt-20 rounded-3xl bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-10 text-center text-white md:px-16">
+
           <h2 className="text-2xl font-semibold md:text-3xl">
             Discover More of Our Products
           </h2>
+
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-blue-100">
             Explore our product collection and find the right solutions for
             your business and personal needs.
           </p>
+
           <button
             type="button"
             onClick={() => router.push("/product")}
@@ -198,6 +245,7 @@ function ProductDetails({ id }: { id: string | null }) {
           >
             Explore Products →
           </button>
+
         </div>
 
       </div>

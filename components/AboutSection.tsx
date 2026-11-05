@@ -24,9 +24,9 @@ export default function AboutSection() {
             </div>
 
             <h2 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight text-[#101a30] md:text-6xl">
-              Delivering quality in{" "}
+              Delivering Quality In{" "}
               <span className="bg-gradient-to-r from-blue-700 to-sky-500 bg-clip-text text-transparent">
-                sports and beauty.
+                Sports .
               </span>
             </h2>
 
