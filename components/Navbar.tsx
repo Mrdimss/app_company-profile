@@ -15,7 +15,7 @@ type NavbarProps = {
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
+  { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Projects", href: "/projects" },
   { label: "Product", href: "/product" },
@@ -26,10 +26,10 @@ export default function Navbar({ company }: NavbarProps) {
   const brandName = company.companyName || "GIRIK";
 
   const linkClass =
-    "group relative py-2 text-sm font-medium text-[#1e3a5f] transition-colors duration-300 hover:text-blue-700";
+    "group relative py-2 text-sm font-semibold text-[#0B1F3A] transition-colors duration-300 hover:text-white";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-blue-100 bg-gradient-to-r from-white via-[#EFF6FF] to-[#DBEAFE] text-[#0B1F3A] shadow-lg shadow-blue-900/5 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-blue-900/20 bg-gradient-to-r from-white via-[#93C5FD] to-[#0B1F3A] text-[#0B1F3A] shadow-lg shadow-blue-900/10 backdrop-blur-xl">
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-16 lg:px-24">
 
@@ -52,7 +52,7 @@ export default function Navbar({ company }: NavbarProps) {
           ) : (
             <span className="text-2xl font-bold tracking-tight text-[#0B1F3A]">
               {brandName}
-              <span className="text-blue-500">.</span>
+              <span className="text-blue-600">.</span>
             </span>
           )}
         </Link>
@@ -67,14 +67,14 @@ export default function Navbar({ company }: NavbarProps) {
             >
               {item.label}
 
-              <span className="absolute bottom-0 left-0 h-0.5 w-0 rounded-full bg-blue-500 transition-all duration-300 group-hover:w-full" />
+              <span className="absolute bottom-0 left-0 h-0.5 w-0 rounded-full bg-white transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
 
           {/* Contact Button */}
           <Link
             href="/contact"
-            className="group inline-flex items-center gap-2 rounded-full border border-blue-300 bg-white/70 px-5 py-2.5 text-sm font-semibold text-blue-800 transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-500 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-500/20"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-5 py-2.5 text-sm font-semibold text-[#0B1F3A] transition-all duration-300 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:shadow-lg hover:shadow-blue-900/20"
           >
             Contact Us
 
@@ -88,7 +88,7 @@ export default function Navbar({ company }: NavbarProps) {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-blue-200 bg-white/70 transition-colors hover:bg-blue-100 md:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-xl border border-blue-900/20 bg-white/70 transition-colors hover:bg-white md:hidden"
           aria-label={isOpen ? "Close menu" : "Open menu"}
           aria-expanded={isOpen}
           aria-controls="mobile-navigation"
@@ -118,7 +118,7 @@ export default function Navbar({ company }: NavbarProps) {
       {/* Mobile Menu */}
       <div
         id="mobile-navigation"
-        className={`grid overflow-hidden border-t border-blue-100 transition-[grid-template-rows,opacity] duration-300 ease-in-out md:hidden ${
+        className={`grid overflow-hidden border-t border-white/30 transition-[grid-template-rows,opacity] duration-300 ease-in-out md:hidden ${
           isOpen
             ? "grid-rows-[1fr] opacity-100"
             : "pointer-events-none grid-rows-[0fr] opacity-0"
@@ -126,7 +126,7 @@ export default function Navbar({ company }: NavbarProps) {
         aria-hidden={!isOpen}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="bg-gradient-to-b from-white via-[#EFF6FF] to-[#DBEAFE] px-6 py-5">
+          <div className="bg-gradient-to-b from-white via-[#93C5FD] to-[#0B1F3A] px-6 py-5">
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
 
               {navItems.map((item) => (
@@ -135,17 +135,18 @@ export default function Navbar({ company }: NavbarProps) {
                   href={item.href}
                   tabIndex={isOpen ? 0 : -1}
                   onClick={() => setIsOpen(false)}
-                  className="rounded-xl px-4 py-3 text-sm font-medium text-[#1e3a5f] transition-all duration-200 hover:bg-blue-100 hover:pl-6 hover:text-blue-700"
+                  className="rounded-xl px-4 py-3 text-sm font-semibold text-[#0B1F3A] transition-all duration-200 hover:bg-white/30 hover:pl-6 hover:text-white"
                 >
                   {item.label}
                 </Link>
               ))}
 
+              {/* Contact Button Mobile */}
               <Link
                 href="/contact"
                 tabIndex={isOpen ? 0 : -1}
                 onClick={() => setIsOpen(false)}
-                className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+                className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-[#0B1F3A] transition-all duration-300 hover:bg-blue-100"
               >
                 Contact Us
                 <span>→</span>

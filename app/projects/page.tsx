@@ -107,7 +107,7 @@ export default async function ProjectsPage() {
           >
             Selected work that{" "}
             <span className="bg-gradient-to-r from-[#1768ac] via-[#2589d8] to-[#54b9ed] bg-clip-text text-transparent">
-              makes an impact.
+              makes an impact
             </span>
           </h1>
 

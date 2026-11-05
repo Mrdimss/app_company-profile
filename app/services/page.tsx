@@ -102,7 +102,7 @@ export default async function ServicesPage() {
           <h1 className="max-w-5xl text-4xl font-semibold leading-[1.08] tracking-tight text-[#102b59] sm:text-5xl md:text-7xl">
             Solutions for{" "}
             <span className="bg-gradient-to-r from-[#1768ac] via-[#2589d8] to-[#54b9ed] bg-clip-text text-transparent">
-              your growth.
+              your growth
             </span>
           </h1>
 

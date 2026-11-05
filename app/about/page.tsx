@@ -111,7 +111,7 @@ export default function AboutPage() {
               <h1 className="text-5xl font-bold leading-[1.08] tracking-tight text-[#101a30] sm:text-6xl md:text-6xl lg:text-7xl">
                 About{" "}
                 <span className="bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 bg-clip-text text-transparent">
-                  Girik.
+                  Girik
                 </span>
               </h1>
             </Reveal>

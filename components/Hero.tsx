@@ -13,19 +13,30 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative isolate flex min-h-[calc(100vh-88px)] items-center overflow-hidden bg-gradient-to-br from-[#F0F7FF] via-[#DBEAFE] to-[#BFDBFE] px-6 py-20 sm:px-10 md:px-16 lg:px-24">
-      {/* Background Decorations */}
-      <div className="pointer-events-none absolute -right-32 -top-32 -z-10 h-[450px] w-[450px] rounded-full bg-blue-300/40 blur-[100px]" />
-      <div className="pointer-events-none absolute -bottom-40 -left-32 -z-10 h-[400px] w-[400px] rounded-full bg-sky-300/40 blur-[100px]" />
-      <div className="pointer-events-none absolute right-[12%] top-[12%] -z-10 hidden h-40 w-40 rounded-full border border-blue-400/20 md:block" />
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] [background-image:radial-gradient(#4778AD_0.7px,transparent_0.7px)] [background-size:24px_24px]" />
+    <section className="relative isolate flex min-h-[calc(100vh-88px)] items-center overflow-hidden bg-[#F0F7FF] px-6 py-20 sm:px-10 md:px-16 lg:px-24">
 
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
-        {/* Left Content */}
-        <div>
+      {/* Background Company Image */}
+      <div
+        className="absolute inset-0 -z-20 bg-cover bg-[position:65%_center] md:bg-center"
+        style={{
+          backgroundImage: "url('/images/hero-company.png')",
+        }}
+      />
+
+      {/* White Blue Overlay */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#F8FBFF]/95 via-[#F8FBFF]/75 to-[#F8FBFF]/20" />
+
+      {/* Additional Blue Decoration */}
+      <div className="pointer-events-none absolute -right-32 -top-32 -z-10 h-80 w-80 rounded-full bg-blue-400/10 blur-[100px]" />
+
+      <div className="mx-auto w-full max-w-7xl">
+
+        {/* Main Content */}
+        <div className="max-w-2xl">
+
           {/* Label */}
           <div
-            className={`mb-8 inline-flex items-center gap-3 rounded-full border border-blue-200/80 bg-white/70 px-4 py-2 shadow-sm backdrop-blur-xl transition-all duration-700 ${
+            className={`mb-8 inline-flex items-center gap-3 rounded-full border border-blue-300/80 bg-white/60 px-5 py-2.5 shadow-sm backdrop-blur-md transition-all duration-700 ${
               isVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-5 opacity-0"
@@ -33,34 +44,47 @@ export default function Hero() {
           >
             <span className="relative flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-50" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-blue-600" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-blue-600" />
             </span>
 
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-900 sm:text-sm">
+            <span className="text-xs font-bold uppercase tracking-[0.18em] text-blue-900 sm:text-sm">
               PT Dunia Sports
             </span>
           </div>
 
           {/* Heading */}
           <h1
-            className={`max-w-3xl text-5xl font-semibold leading-[1.04] tracking-[-0.055em] text-slate-900 transition-all duration-700 sm:text-6xl md:text-7xl lg:text-[5.2rem] ${
+            className={`text-5xl font-bold leading-[1.05] tracking-[-0.05em] text-slate-950 transition-all duration-700 sm:text-6xl md:text-7xl lg:text-[5.3rem] ${
               isVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-8 opacity-0"
             }`}
             style={{ transitionDelay: "120ms" }}
           >
-            WE DISTRIBUTOR
+            WE DISTRIBUTE
             <br />
+
             <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-sky-500 bg-clip-text text-transparent">
               SPORTS
             </span>{" "}
-            PRODUCTS.
+            PRODUCTS
           </h1>
+
+          {/* Subtitle */}
+          <h2
+            className={`mt-5 text-xl font-semibold tracking-tight text-blue-950 transition-all duration-700 sm:text-2xl md:text-3xl ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-6 opacity-0"
+            }`}
+            style={{ transitionDelay: "200ms" }}
+          >
+            Trade & Distributor Company
+          </h2>
 
           {/* Description */}
           <p
-            className={`mt-7 max-w-xl text-base leading-8 text-slate-600 transition-all duration-700 sm:text-lg ${
+            className={`mt-6 max-w-lg text-base leading-8 text-slate-700 transition-all duration-700 sm:text-lg ${
               isVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-6 opacity-0"
@@ -68,6 +92,8 @@ export default function Hero() {
             style={{ transitionDelay: "250ms" }}
           >
             We distribute quality sports products with reliability and care.
+            Connecting businesses through trusted trading, sourcing, and
+            distribution solutions.
           </p>
 
           {/* Buttons */}
@@ -81,9 +107,10 @@ export default function Hero() {
           >
             <Link
               href="/projects"
-              className="group inline-flex items-center justify-center gap-4 rounded-full bg-blue-700 px-7 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-xl hover:shadow-blue-700/25"
+              className="group inline-flex items-center justify-center gap-4 rounded-full bg-blue-800 px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-900 hover:shadow-xl"
             >
               Explore Our Work
+
               <span className="transition-transform duration-300 group-hover:translate-x-1.5">
                 →
               </span>
@@ -91,17 +118,16 @@ export default function Hero() {
 
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center gap-3 rounded-full border border-blue-200 bg-white/70 px-7 py-4 text-sm font-semibold text-blue-950 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:bg-white"
+              className="inline-flex items-center justify-center gap-3 rounded-full border border-blue-300 bg-white/70 px-8 py-4 text-sm font-semibold text-blue-950 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 hover:bg-white"
             >
               Let's Talk
-              <span aria-hidden="true">↗</span>
-              
+              <span>↗</span>
             </Link>
           </div>
 
           {/* Trust Indicators */}
           <div
-            className={`mt-12 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-blue-200/80 pt-6 text-sm text-slate-600 transition-all duration-700 ${
+            className={`mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-blue-200/80 pt-6 text-sm font-medium text-slate-700 transition-all duration-700 ${
               isVisible ? "opacity-100" : "opacity-0"
             }`}
             style={{ transitionDelay: "450ms" }}
@@ -117,91 +143,18 @@ export default function Hero() {
             </span>
           </div>
         </div>
-
-        {/* Right Visual */}
-        <div
-          className={`relative mx-auto w-full max-w-md transition-all duration-1000 lg:max-w-none ${
-            isVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-8 opacity-0"
-          }`}
-          style={{ transitionDelay: "300ms" }}
-        >
-          {/* Decorative Ring */}
-          <div className="absolute -right-4 -top-4 h-28 w-28 rounded-full border border-blue-400/40 sm:-right-6 sm:-top-6 sm:h-36 sm:w-36" />
-
-          {/* Main Visual Card */}
-          <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/50 p-3 shadow-2xl shadow-blue-900/10 backdrop-blur-xl sm:rounded-[2.5rem] sm:p-4">
-            <div className="relative flex min-h-[390px] flex-col justify-between overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-blue-900 via-blue-700 to-sky-500 p-6 text-white sm:min-h-[460px] sm:rounded-[2rem] sm:p-8">
-              {/* Decorative Circles */}
-              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full border border-white/15" />
-              <div className="absolute -right-10 -top-10 h-44 w-44 rounded-full border border-white/15" />
-              <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-sky-300/20 blur-2xl" />
-
-              {/* Card Header */}
-              <div className="relative z-10 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-blue-100">
-                    Our Commitment
-                  </p>
-                  <p className="mt-2 text-lg font-semibold sm:text-xl">
-                    Built on Trust.
-                  </p>
-                </div>
-
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-2xl backdrop-blur-md">
-                  ↗
-                </div>
-              </div>
-
-              {/* Sports Illustration */}
-              <div className="relative z-10 flex flex-1 items-center justify-center py-8">
-                <div className="relative flex h-44 w-44 items-center justify-center rounded-full border border-white/25 bg-white/10 shadow-2xl backdrop-blur-sm sm:h-52 sm:w-52">
-                  <div className="absolute inset-4 rounded-full border border-white/20" />
-                  <div className="absolute inset-8 rounded-full border border-white/20" />
-
-                  <svg
-                    viewBox="0 0 120 120"
-                    className="h-28 w-28 text-white drop-shadow-lg sm:h-36 sm:w-36"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                    role="img"
-                    aria-label="Sports ball illustration"
-                  >
-                    <circle cx="60" cy="60" r="43" />
-                    <path d="M60 17 L76 38 L68 57 L45 57 L36 37 Z" />
-                    <path
-                      d="M45 57 L28 76 L38 94 M68 57 L86 72 L82 92 M36 37 L19 44 M76 38 L96 34 M28 76 L14 68 M86 72 L105 62 M38 94 L60 103 L82 92 M60 17 L60 4"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Card Footer */}
-              <div className="relative z-10 border-t border-white/20 pt-5">
-                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Moving Brands Forward.
-                </h2>
-
-                <p className="mt-2 max-w-xs text-sm leading-6 text-blue-100">
-                  Quality products. Reliable partnerships. Better opportunities.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Floating Badge */}
-          <div className="absolute -bottom-5 -left-2 rounded-2xl border border-white/80 bg-white/90 px-4 py-3 shadow-xl shadow-blue-900/10 backdrop-blur-xl sm:-left-8 sm:px-5 sm:py-4">
-            <p className="text-xs text-slate-500">Our focus</p>
-            <p className="mt-1 text-sm font-bold text-blue-900 sm:text-base">
-              Quality & Partnership
-            </p>
-          </div>
-        </div>
       </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-blue-800/70 md:flex">
+        <span className="h-9 w-5 rounded-full border-2 border-blue-700/60 p-1">
+          <span className="mx-auto block h-2 w-1 rounded-full bg-blue-700 animate-bounce" />
+        </span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">
+          Scroll
+        </span>
+      </div>
+
     </section>
   );
 }

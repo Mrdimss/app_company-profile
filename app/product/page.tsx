@@ -503,7 +503,7 @@ export default function ProductPage() {
             <h2 className="mt-6 max-w-4xl text-3xl font-semibold leading-tight tracking-tight md:text-5xl lg:text-6xl">
               Quality products for{" "}
               <span className="bg-gradient-to-r from-sky-300 to-blue-200 bg-clip-text text-transparent">
-                every need.
+                every need
               </span>
             </h2>
           </Reveal>
