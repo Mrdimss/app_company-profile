@@ -4,6 +4,7 @@ import { getAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { removeUploadedImage, saveUploadedImage } from "@/lib/storage";
 import { getUniqueSlug } from "@/lib/content";
+import { InvalidMarketplaceUrlError, normalizeMarketplaceUrl } from "@/lib/marketplace-url";
 
 function readString(value: unknown): string | undefined {
   if (typeof value === "string") {
@@ -89,7 +90,8 @@ export async function PATCH(
     const name = readString(body.name);
     const description = readString(body.description);
     const category = body.category === undefined ? undefined : readString(body.category) ?? null;
-    const productUrl = body.productUrl === undefined ? undefined : readString(body.productUrl) ?? null;
+    const productUrl = normalizeMarketplaceUrl(body.productUrl, "shopee");
+    const tokopediaUrl = normalizeMarketplaceUrl(body.tokopediaUrl, "tokopedia");
     const slugValue = body.slug === undefined ? undefined : readString(body.slug);
     const imageFile = body.image instanceof File ? body.image : null;
     const shouldRemoveImage = body.removeImage === "true" || body.removeImage === true;
@@ -109,6 +111,7 @@ export async function PATCH(
       image?: string | null;
       category?: string | null;
       productUrl?: string | null;
+      tokopediaUrl?: string | null;
       isPublished?: boolean;
     } = {};
 
@@ -116,6 +119,7 @@ export async function PATCH(
     if (description) updateData.description = description;
     if (typeof category !== "undefined") updateData.category = category;
     if (typeof productUrl !== "undefined") updateData.productUrl = productUrl;
+    if (typeof tokopediaUrl !== "undefined") updateData.tokopediaUrl = tokopediaUrl;
     if (typeof body.isPublished !== "undefined") updateData.isPublished = readBoolean(body.isPublished, true);
     const requestedSlug =
       slugValue || (body.slug !== undefined || name !== undefined ? name : undefined);
@@ -146,6 +150,10 @@ export async function PATCH(
 
     return NextResponse.json({ item });
   } catch (error) {
+    if (error instanceof InvalidMarketplaceUrlError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return NextResponse.json({ error: "Slug produk sudah digunakan." }, { status: 409 });
     }

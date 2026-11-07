@@ -202,7 +202,7 @@ export default function ContactPage() {
               Let&apos;s work
               <br />
               <span className="bg-gradient-to-r from-blue-700 to-sky-400 bg-clip-text text-transparent">
-                together.
+                together
               </span>
             </h1>
           </Reveal>
@@ -211,7 +211,7 @@ export default function ContactPage() {
             <p className="mt-8 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
               Have a question, business inquiry, or partnership
               opportunity? Get in touch with PT Dunia Sports
-              Interprises and our team will be happy to assist you.
+              Interprises and our team will be happy to assist you
             </p>
           </Reveal>
 

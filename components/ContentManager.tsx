@@ -40,7 +40,7 @@ type FormState = {
 };
 
 const inputClassName =
-  "mt-2 w-full border border-neutral-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-neutral-900";
+  "mt-2 w-full rounded-xl border border-blue-100 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100/70";
 
 function getApiBase(kind: ContentKind) {
   return kind === "project"
@@ -67,11 +67,15 @@ function getDefaultState(): FormState {
 }
 
 function getTitleValue(item: ItemRecord, kind: ContentKind) {
-  if (kind === "product") {
-    return item.name ?? "Produk";
-  }
+  return kind === "product"
+    ? item.name ?? "Produk"
+    : item.title ?? "Judul";
+}
 
-  return item.title ?? "Judul";
+function getKindIcon(kind: ContentKind) {
+  if (kind === "project") return "📁";
+  if (kind === "service") return "⚙️";
+  return "📦";
 }
 
 export default function ContentManager({
@@ -206,6 +210,13 @@ export default function ContentManager({
     });
 
     setImageFile(null);
+    setError("");
+    setMessage("");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }
 
   async function handleDelete(id: string) {
@@ -230,6 +241,10 @@ export default function ContentManager({
       setMessage("Data berhasil dihapus.");
       setError("");
 
+      if (editingId === id) {
+        resetForm();
+      }
+
       await refreshItems(loadAbortController.current?.signal);
     } catch {
       setError("Tidak dapat menghapus data.");
@@ -245,7 +260,6 @@ export default function ContentManager({
 
     try {
       const formData = new FormData();
-
       const recordValue = kind === "product" ? form.name : form.title;
 
       if (recordValue.trim().length === 0) {
@@ -282,7 +296,6 @@ export default function ContentManager({
       }
 
       const method = editingId ? "PATCH" : "POST";
-
       const url = editingId
         ? `${apiBase}/${editingId}`
         : apiBase;
@@ -316,37 +329,134 @@ export default function ContentManager({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="relative isolate min-h-screen space-y-8 overflow-hidden rounded-3xl bg-gradient-to-br from-white via-blue-100 to-[#0B1F3A] p-4 sm:p-6 lg:p-8">
+
+      {/* BACKGROUND DECORATION */}
+      <div className="pointer-events-none absolute -right-32 -top-32 -z-10 h-[450px] w-[450px] rounded-full bg-blue-300/40 blur-[110px]" />
+
+      <div className="pointer-events-none absolute -bottom-40 -left-32 -z-10 h-[400px] w-[400px] rounded-full bg-sky-300/30 blur-[100px]" />
+
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] [background-image:radial-gradient(#4778AD_0.7px,transparent_0.7px)] [background-size:24px_24px]" />
 
       {/* HEADER */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-neutral-500">
-            Data
+      <section className="relative overflow-hidden rounded-3xl border border-white/70 bg-gradient-to-br from-white via-blue-50 to-blue-200 p-6 shadow-xl shadow-blue-950/10 backdrop-blur-xl sm:p-8">
+
+        <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full border-[35px] border-blue-300/20" />
+        <div className="absolute -bottom-24 right-32 h-48 w-48 rounded-full bg-blue-400/20 blur-3xl" />
+
+        <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-800 shadow-sm backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-green-500" />
+              GIRIK Management System
+            </div>
+
+            <p className="text-sm font-medium text-blue-700">
+              Dashboard / Data Management
+            </p>
+
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0B1F3A] sm:text-4xl">
+              {title}
+            </h1>
+
+            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
+              Kelola informasi {title.toLowerCase()} perusahaan
+              dengan mudah melalui administrator GIRIK.
+            </p>
+          </div>
+
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border border-white/80 bg-gradient-to-br from-blue-700 to-[#0B1F3A] text-4xl text-white shadow-xl shadow-blue-950/20">
+            {getKindIcon(kind)}
+          </div>
+        </div>
+      </section>
+
+      {/* SUMMARY */}
+      <section className="grid gap-4 sm:grid-cols-2">
+        <div className="rounded-2xl border border-white/80 bg-white/85 p-5 shadow-lg shadow-blue-950/5 backdrop-blur-xl">
+          <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
+            Total Data
           </p>
 
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-950">
-            {title}
-          </h1>
+          <div className="mt-3 flex items-end justify-between">
+            <h2 className="text-4xl font-extrabold text-[#0B1F3A]">
+              {loading ? "..." : items.length}
+            </h2>
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl text-blue-700">
+              {getKindIcon(kind)}
+            </div>
+          </div>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Jumlah seluruh data {title.toLowerCase()}.
+          </p>
         </div>
-      </div>
+
+        <div className="rounded-2xl border border-white/20 bg-gradient-to-br from-[#174477] via-[#0B1F3A] to-[#061326] p-5 text-white shadow-xl shadow-blue-950/15">
+          <p className="text-xs font-bold uppercase tracking-widest text-blue-200">
+            Status Publikasi
+          </p>
+
+          <div className="mt-3 flex items-end justify-between">
+            <h2 className="text-4xl font-extrabold">
+              {loading
+                ? "..."
+                : items.filter((item) => item.isPublished).length}
+            </h2>
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-2xl">
+              ✓
+            </div>
+          </div>
+
+          <p className="mt-2 text-sm text-blue-100/75">
+            Data yang ditampilkan di website publik.
+          </p>
+        </div>
+      </section>
 
       {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="border border-neutral-200 bg-white"
+        className="overflow-hidden rounded-3xl border border-white/80 bg-white/90 shadow-xl shadow-blue-950/10 backdrop-blur-xl"
       >
-        <div className="space-y-5 p-5 sm:p-7">
+        {/* FORM HEADER */}
+        <div className="border-b border-blue-100 bg-gradient-to-r from-white to-blue-50 px-5 py-6 sm:px-7">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-[#0B1F3A] text-2xl text-white shadow-lg shadow-blue-900/20">
+              {editingId ? "✎" : "+"}
+            </div>
+
+            <div>
+              <h2 className="text-xl font-extrabold text-[#0B1F3A]">
+                {editingId ? "Edit Data" : "Tambah Data Baru"}
+              </h2>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Lengkapi informasi {title.toLowerCase()} berikut.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* FORM BODY */}
+        <div className="space-y-6 p-5 sm:p-7">
 
           {/* TITLE */}
           {kind !== "service" && (
-            <label className="block text-sm font-medium text-neutral-700">
-              {kind === "project" ? "Judul project" : "Nama produk"}
+            <label className="block text-sm font-bold text-slate-700">
+              {kind === "project" ? "Judul Project" : "Nama Produk"}
 
               <input
                 className={inputClassName}
                 onChange={(event) =>
                   handleTitleChange(event.target.value)
+                }
+                placeholder={
+                  kind === "project"
+                    ? "Masukkan judul project"
+                    : "Masukkan nama produk"
                 }
                 required
                 value={kind === "project" ? form.title : form.name}
@@ -355,14 +465,15 @@ export default function ContentManager({
           )}
 
           {kind === "service" && (
-            <label className="block text-sm font-medium text-neutral-700">
-              Judul layanan
+            <label className="block text-sm font-bold text-slate-700">
+              Judul Layanan
 
               <input
                 className={inputClassName}
                 onChange={(event) =>
                   handleTitleChange(event.target.value)
                 }
+                placeholder="Masukkan judul layanan"
                 required
                 value={form.title}
               />
@@ -371,8 +482,7 @@ export default function ContentManager({
 
           {/* SLUG AND CATEGORY */}
           <div className="grid gap-5 md:grid-cols-2">
-
-            <label className="block text-sm font-medium text-neutral-700">
+            <label className="block text-sm font-bold text-slate-700">
               Slug
 
               <input
@@ -387,10 +497,13 @@ export default function ContentManager({
                 required
                 value={form.slug}
               />
+              <span className="mt-1 block text-xs font-normal text-slate-400">
+                URL khusus untuk identitas konten.
+              </span>
             </label>
 
             {kind !== "service" && (
-              <label className="block text-sm font-medium text-neutral-700">
+              <label className="block text-sm font-bold text-slate-700">
                 Kategori
 
                 <input
@@ -401,6 +514,7 @@ export default function ContentManager({
                       category: event.target.value,
                     }))
                   }
+                  placeholder="Masukkan kategori"
                   value={form.category}
                 />
               </label>
@@ -410,9 +524,8 @@ export default function ContentManager({
           {/* SERVICE FIELDS */}
           {kind === "service" && (
             <div className="grid gap-5 md:grid-cols-2">
-
-              <label className="block text-sm font-medium text-neutral-700">
-                Icon / identifier
+              <label className="block text-sm font-bold text-slate-700">
+                Icon / Identifier
 
                 <input
                   className={inputClassName}
@@ -422,12 +535,13 @@ export default function ContentManager({
                       icon: event.target.value,
                     }))
                   }
+                  placeholder="Contoh: truck"
                   value={form.icon}
                 />
               </label>
 
-              <label className="block text-sm font-medium text-neutral-700">
-                Urutan tampil
+              <label className="block text-sm font-bold text-slate-700">
+                Urutan Tampil
 
                 <input
                   className={inputClassName}
@@ -448,33 +562,51 @@ export default function ContentManager({
           {/* IMAGE UPLOAD */}
           {(kind === "project" || kind === "product") && (
             <div>
-              <label className="block text-sm font-medium text-neutral-700">
-                Unggah gambar
+              <label className="block text-sm font-bold text-slate-700">
+                Unggah Gambar
 
                 <input
                   accept="image/jpeg,image/png,image/webp"
-                  className="mt-2 block w-full text-sm text-neutral-700 file:mr-4 file:border file:border-neutral-300 file:bg-white file:px-3 file:py-2 file:text-sm file:font-medium file:text-neutral-900"
+                  className="mt-2 block w-full rounded-xl border border-blue-100 bg-white p-3 text-sm text-slate-700 file:mr-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-blue-700 file:to-[#0B1F3A] file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:opacity-90"
                   onChange={(event) =>
                     setImageFile(event.target.files?.[0] ?? null)
                   }
                   type="file"
                 />
               </label>
+
+              {imageFile && (
+                <div className="mt-3 flex items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 p-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-lg">
+                    🖼️
+                  </span>
+
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-blue-800">
+                      Gambar dipilih
+                    </p>
+                    <p className="truncate text-xs text-slate-500">
+                      {imageFile.name}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* DESCRIPTION */}
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-bold text-slate-700">
             Deskripsi
 
             <textarea
-              className={`${inputClassName} min-h-32`}
+              className={`${inputClassName} min-h-36 resize-y`}
               onChange={(event) =>
                 setForm((current) => ({
                   ...current,
                   description: event.target.value,
                 }))
               }
+              placeholder="Masukkan deskripsi..."
               required
               value={form.description}
             />
@@ -482,8 +614,8 @@ export default function ContentManager({
 
           {/* PROJECT URL */}
           {kind === "project" && (
-            <label className="block text-sm font-medium text-neutral-700">
-              URL project
+            <label className="block text-sm font-bold text-slate-700">
+              URL Project
 
               <input
                 className={inputClassName}
@@ -493,6 +625,7 @@ export default function ContentManager({
                     projectUrl: event.target.value,
                   }))
                 }
+                placeholder="https://..."
                 type="url"
                 value={form.projectUrl}
               />
@@ -502,8 +635,7 @@ export default function ContentManager({
           {/* PRODUCT URLS */}
           {kind === "product" && (
             <div className="grid gap-5 md:grid-cols-2">
-
-              <label className="block text-sm font-medium text-neutral-700">
+              <label className="block text-sm font-bold text-slate-700">
                 URL Shopee
 
                 <input
@@ -520,7 +652,7 @@ export default function ContentManager({
                 />
               </label>
 
-              <label className="block text-sm font-medium text-neutral-700">
+              <label className="block text-sm font-bold text-slate-700">
                 URL Tokopedia
 
                 <input
@@ -536,14 +668,14 @@ export default function ContentManager({
                   value={form.tokopediaUrl}
                 />
               </label>
-
             </div>
           )}
 
           {/* PUBLISH STATUS */}
-          <label className="flex items-center gap-3 text-sm font-medium text-neutral-700">
+          <label className="flex cursor-pointer items-center gap-4 rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50 to-white p-4 transition hover:border-blue-300">
             <input
               checked={form.isPublished}
+              className="h-5 w-5 accent-blue-700"
               onChange={(event) =>
                 setForm((current) => ({
                   ...current,
@@ -553,33 +685,37 @@ export default function ContentManager({
               type="checkbox"
             />
 
-            Tampilkan di website publik
+            <div>
+              <p className="text-sm font-bold text-[#0B1F3A]">
+                Tampilkan di website publik
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                Aktifkan untuk menampilkan konten kepada pengunjung.
+              </p>
+            </div>
           </label>
-
         </div>
 
         {/* BUTTONS AND MESSAGES */}
-        <div className="flex flex-col items-start gap-3 border-t border-neutral-200 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-
+        <div className="flex flex-col gap-4 border-t border-blue-100 bg-gradient-to-r from-white to-blue-50/80 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
           <div aria-live="polite">
             {error && (
-              <p role="alert" className="text-sm text-red-700">
+              <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-600">
                 {error}
               </p>
             )}
 
             {message && (
-              <p role="status" className="text-sm text-green-700">
+              <p role="status" className="rounded-lg bg-green-50 px-3 py-2 text-sm font-semibold text-green-700">
                 {message}
               </p>
             )}
           </div>
 
-          <div className="flex gap-3">
-
+          <div className="flex flex-wrap gap-3">
             {editingId && (
               <button
-                className="border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-50"
+                className="rounded-xl border border-blue-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-blue-50"
                 onClick={resetForm}
                 type="button"
               >
@@ -588,136 +724,183 @@ export default function ContentManager({
             )}
 
             <button
-              className="bg-neutral-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl bg-gradient-to-r from-blue-700 to-[#0B1F3A] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-900/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
               disabled={saving || loading}
               type="submit"
             >
               {saving
                 ? "Menyimpan..."
                 : editingId
-                  ? "Perbarui data"
-                  : "Tambah data"}
+                  ? "Perbarui Data"
+                  : "Tambah Data"}
             </button>
-
           </div>
         </div>
       </form>
 
       {/* DATA LIST */}
-      <section className="border border-neutral-200 bg-white">
+      <section className="overflow-hidden rounded-3xl border border-white/80 bg-white/90 shadow-xl shadow-blue-950/10 backdrop-blur-xl">
 
-        <div className="border-b border-neutral-200 p-5">
-          <h2 className="text-xl font-semibold text-neutral-950">
-            Daftar {title}
-          </h2>
+        {/* LIST HEADER */}
+        <div className="flex flex-col justify-between gap-4 border-b border-blue-100 bg-gradient-to-r from-white to-blue-50 p-5 sm:flex-row sm:items-center sm:px-7">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
+              Content Management
+            </p>
+
+            <h2 className="mt-2 text-xl font-extrabold text-[#0B1F3A]">
+              Daftar {title}
+            </h2>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Kelola dan perbarui informasi yang tersimpan.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 rounded-xl border border-blue-100 bg-white px-4 py-3 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-blue-600" />
+            <span className="text-sm font-bold text-blue-800">
+              {items.length} Data
+            </span>
+          </div>
         </div>
 
+        {/* LOADING */}
         {loading ? (
-          <div className="p-5 text-sm text-neutral-500">
-            Memuat data...
+          <div className="p-12 text-center">
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-blue-100 border-t-blue-700" />
+            <p className="mt-4 text-sm font-medium text-slate-500">
+              Memuat data...
+            </p>
           </div>
         ) : items.length === 0 ? (
-          <div className="p-5 text-sm text-neutral-500">
-            {emptyText}
+          /* EMPTY STATE */
+          <div className="p-12 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 text-3xl text-blue-700">
+              ◇
+            </div>
+
+            <p className="mt-4 font-bold text-[#0B1F3A]">
+              Belum Ada Data
+            </p>
+
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+              {emptyText}
+            </p>
           </div>
         ) : (
-          <div className="divide-y divide-neutral-200">
-
+          /* DATA ITEMS */
+          <div className="divide-y divide-blue-100">
             {items.map((item) => (
               <div
                 key={item.id}
-                className="grid gap-5 p-5 md:grid-cols-[1fr_auto] md:items-start"
+                className="grid gap-5 p-5 transition-colors hover:bg-blue-50/60 md:grid-cols-[1fr_auto] md:items-center sm:p-6"
               >
+                <div className="flex min-w-0 gap-4">
 
-                <div className="flex gap-4">
-
+                  {/* IMAGE */}
                   {(kind === "project" || kind === "product") &&
                     item.image && (
-                      <Image
-                        alt={getTitleValue(item, kind)}
-                        width={80}
-                        height={80}
-                        unoptimized
-                        className="h-20 w-20 rounded-md border border-neutral-200 object-cover"
-                        src={item.image}
-                      />
+                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 shadow-sm sm:h-24 sm:w-24">
+                        <Image
+                          alt={getTitleValue(item, kind)}
+                          width={96}
+                          height={96}
+                          unoptimized
+                          className="h-full w-full object-cover"
+                          src={item.image}
+                        />
+                      </div>
                     )}
 
-                  <div className="min-w-0">
-
+                  {/* ITEM INFORMATION */}
+                  <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-
-                      <h3 className="text-lg font-medium text-neutral-950">
+                      <h3 className="text-base font-extrabold text-[#0B1F3A] sm:text-lg">
                         {getTitleValue(item, kind)}
                       </h3>
 
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.15em] ${
+                        className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
                           item.isPublished
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-neutral-200 text-neutral-600"
+                            ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border border-slate-200 bg-slate-100 text-slate-600"
                         }`}
                       >
                         {item.isPublished ? "Published" : "Draft"}
                       </span>
-
                     </div>
 
-                    <p className="mt-2 text-sm text-neutral-500">
+                    <p className="mt-2 break-all text-xs font-medium text-blue-700">
                       Slug: {item.slug}
                     </p>
 
-                    <p className="mt-2 line-clamp-3 text-sm text-neutral-700">
+                    {item.category && (
+                      <p className="mt-1 text-xs text-slate-500">
+                        Kategori: {item.category}
+                      </p>
+                    )}
+
+                    <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">
                       {item.description}
                     </p>
 
+                    {/* PRODUCT MARKETPLACE LINKS */}
                     {kind === "product" && (
-                      <div className="mt-2 space-y-1 text-xs text-neutral-500">
+                      <div className="mt-3 flex flex-col gap-1 text-xs text-slate-500">
                         {item.productUrl && (
-                          <p>
-                            Shopee: {item.productUrl}
+                          <p className="break-all">
+                            <span className="font-bold text-orange-600">
+                              Shopee:
+                            </span>{" "}
+                            {item.productUrl}
                           </p>
                         )}
 
                         {item.tokopediaUrl && (
-                          <p>
-                            Tokopedia: {item.tokopediaUrl}
+                          <p className="break-all">
+                            <span className="font-bold text-green-700">
+                              Tokopedia:
+                            </span>{" "}
+                            {item.tokopediaUrl}
                           </p>
                         )}
                       </div>
                     )}
-
                   </div>
                 </div>
 
                 {/* ACTION BUTTONS */}
-                <div className="flex items-center gap-2">
-
+                <div className="flex items-center gap-2 md:justify-end">
                   <button
-                    className="border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-50"
+                    className="flex-1 rounded-xl border border-blue-200 bg-white px-5 py-2.5 text-sm font-bold text-blue-800 shadow-sm transition hover:border-blue-500 hover:bg-blue-50 md:flex-none"
                     onClick={() => handleEdit(item)}
                     type="button"
                   >
-                    Edit
+                    ✎ Edit
                   </button>
 
                   <button
-                    className="border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100"
+                    className="flex-1 rounded-xl border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-bold text-red-600 transition hover:border-red-300 hover:bg-red-100 md:flex-none"
                     onClick={() => void handleDelete(item.id)}
                     type="button"
                   >
                     Hapus
                   </button>
-
                 </div>
-
               </div>
             ))}
-
           </div>
         )}
       </section>
 
+      {/* FOOTER */}
+      <footer className="pb-2 text-center">
+        <p className="text-xs font-medium text-white/80">
+          © {new Date().getFullYear()} GIRIK Administration System.
+          All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }

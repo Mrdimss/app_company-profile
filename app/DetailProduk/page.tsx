@@ -188,9 +188,17 @@ function ProductDetails({ id }: { id: string | null }) {
                       href={product.productUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      title="Shopee"
+                      aria-label="Beli produk ini di Shopee"
                       className={buttonClass}
                     >
-                      <span>🛒</span>
+                      <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
+                        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none">
+                          <path d="M8 9V7a4 4 0 0 1 8 0v2" stroke="#ee4d2d" strokeWidth="1.8" strokeLinecap="round" />
+                          <path d="M5.5 9h13l1.2 12h-15L5.5 9Z" fill="#ee4d2d" />
+                          <text x="12" y="18" fill="white" fontSize="9" fontWeight="700" textAnchor="middle">S</text>
+                        </svg>
+                      </span>
                       Buy on Shopee
                       <span>↗</span>
                     </a>
@@ -202,9 +210,18 @@ function ProductDetails({ id }: { id: string | null }) {
                       href={product.tokopediaUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      title="Tokopedia"
+                      aria-label="Beli produk ini di Tokopedia"
                       className={buttonClass}
                     >
-                      <span>🛍️</span>
+                      <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
+                        <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none">
+                          <path d="M4.5 10.5 6 6h12l1.5 4.5v8h-15v-8Z" fill="#03ac0e" />
+                          <path d="M4.5 10.5h15M8 6l1.5 4.5M16 6l-1.5 4.5" stroke="white" strokeWidth="1.2" strokeLinejoin="round" />
+                          <circle cx="9.5" cy="14" r="1.4" fill="white" />
+                          <circle cx="14.5" cy="14" r="1.4" fill="white" />
+                        </svg>
+                      </span>
                       Buy on Tokopedia
                       <span>↗</span>
                     </a>

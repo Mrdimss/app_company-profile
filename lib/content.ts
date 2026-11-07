@@ -79,6 +79,7 @@ const fallbackProducts = [
     image: null,
     category: "Solutions",
     productUrl: null,
+    tokopediaUrl: null,
     isPublished: true,
     createdAt: new Date(),
     updatedAt: new Date(),

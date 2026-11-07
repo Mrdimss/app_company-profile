@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { getPublishedProducts, getUniqueSlug } from "@/lib/content";
+import { InvalidMarketplaceUrlError, normalizeMarketplaceUrl } from "@/lib/marketplace-url";
 import { prisma } from "@/lib/prisma";
 import { saveUploadedImage } from "@/lib/storage";
 
@@ -85,7 +86,8 @@ export async function POST(request: Request) {
     const name = readString(body.name);
     const description = readString(body.description);
     const category = readString(body.category) ?? null;
-    const productUrl = readString(body.productUrl) ?? null;
+    const productUrl = normalizeMarketplaceUrl(body.productUrl, "shopee") ?? null;
+    const tokopediaUrl = normalizeMarketplaceUrl(body.tokopediaUrl, "tokopedia") ?? null;
     const slugInput = readString(body.slug) ?? name;
     const imageFile = body.image instanceof File ? body.image : null;
 
@@ -110,6 +112,7 @@ export async function POST(request: Request) {
         image: imageUrl,
         category,
         productUrl,
+        tokopediaUrl,
         isPublished: readBoolean(body.isPublished, true),
       },
     });
@@ -119,6 +122,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ item }, { status: 201 });
   } catch (error) {
+    if (error instanceof InvalidMarketplaceUrlError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return NextResponse.json({ error: "Slug produk sudah digunakan." }, { status: 409 });
     }
