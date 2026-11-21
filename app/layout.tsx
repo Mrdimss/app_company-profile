@@ -5,6 +5,7 @@ import { getCompanySettings } from "@/lib/content";
 import { isLocale } from "@/lib/i18n";
 import { headers } from "next/headers";
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: {
@@ -29,6 +30,7 @@ export default async function RootLayout({
         <LocaleProvider locale={locale}>
           <PublicShell company={company}>{children}</PublicShell>
         </LocaleProvider>
+        <Analytics />
       </body>
     </html>
   );
