@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 type CompanySettings = {
@@ -28,10 +28,12 @@ export default function CompanySettingsForm() {
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [removeLogo, setRemoveLogo] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadSettings() {
@@ -77,6 +79,7 @@ export default function CompanySettingsForm() {
       formData.append("email", settings.email ?? "");
       formData.append("phone", settings.phone ?? "");
       formData.append("address", settings.address ?? "");
+      formData.append("removeLogo", String(removeLogo));
 
       if (logoFile) {
         formData.append("logo", logoFile);
@@ -98,13 +101,17 @@ export default function CompanySettingsForm() {
         ...current,
         companyName: result.company.companyName ?? current.companyName,
         tagline: result.company.tagline ?? current.tagline,
-        logoUrl: result.company.logoUrl ?? current.logoUrl,
+        logoUrl: result.company.logoUrl,
         logoAltText: result.company.logoAltText ?? current.logoAltText,
         email: result.company.email ?? current.email,
         phone: result.company.phone ?? current.phone,
         address: result.company.address ?? current.address,
       }));
       setLogoFile(null);
+      setRemoveLogo(false);
+      if (logoInputRef.current) {
+        logoInputRef.current.value = "";
+      }
       setMessage(
         result.storageCleanupPending
           ? "Pengaturan tersimpan, tetapi logo lama belum terhapus."
@@ -218,15 +225,19 @@ export default function CompanySettingsForm() {
           <label className="block text-sm font-medium text-neutral-700">
             Unggah logo baru
             <input
+              ref={logoInputRef}
               className="mt-2 block w-full text-sm text-neutral-700 file:mr-4 file:border file:border-neutral-300 file:bg-white file:px-3 file:py-2 file:text-sm file:font-medium file:text-neutral-900"
-              onChange={(event) => setLogoFile(event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                setLogoFile(event.target.files?.[0] ?? null);
+                setRemoveLogo(false);
+              }}
               type="file"
               accept="image/jpeg,image/png,image/webp"
             />
           </label>
         </div>
 
-        {settings.logoUrl && (
+        {settings.logoUrl && !removeLogo && (
           <div className="overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-3">
             <p className="mb-3 text-xs uppercase tracking-[0.2em] text-neutral-500">Preview logo</p>
             <Image
@@ -237,6 +248,33 @@ export default function CompanySettingsForm() {
               className="max-h-20 w-auto object-contain"
               src={settings.logoUrl}
             />
+            <button
+              className="mt-3 block text-sm font-medium text-red-700 hover:text-red-900 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={saving || loading}
+              onClick={() => {
+                setRemoveLogo(true);
+                setLogoFile(null);
+                if (logoInputRef.current) {
+                  logoInputRef.current.value = "";
+                }
+              }}
+              type="button"
+            >
+              Hapus logo
+            </button>
+          </div>
+        )}
+        {settings.logoUrl && removeLogo && (
+          <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+            <p className="text-sm text-neutral-700">Logo akan dihapus saat pengaturan disimpan.</p>
+            <button
+              className="mt-2 text-sm font-medium text-neutral-700 underline hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={saving || loading}
+              onClick={() => setRemoveLogo(false)}
+              type="button"
+            >
+              Batalkan
+            </button>
           </div>
         )}
       </div>
