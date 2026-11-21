@@ -1,4 +1,3 @@
-import type { Service } from "@prisma/client";
 import { getPublishedServices } from "@/lib/content";
 import { getRequestLocale } from "@/lib/request-locale";
 import { translate } from "@/lib/i18n";
@@ -6,7 +5,7 @@ import { translate } from "@/lib/i18n";
 export default async function ServicesPage() {
   const locale = await getRequestLocale();
   const text = translate(locale).services;
-  const services: Service[] = await getPublishedServices();
+  const services = await getPublishedServices();
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#eaf3ff] via-[#d8eaff] to-[#b8e3ff] px-6 py-20 text-[#102b59] md:px-16 md:py-28 lg:px-24">
@@ -125,7 +124,7 @@ export default async function ServicesPage() {
           </div>
         ) : (
           <div className="mt-14 space-y-5">
-            {services.map((service: Service, index: number) => (
+            {services.map((service, index) => (
               <article
                 key={service.id}
                 className="service-card services-fade-up rounded-3xl border border-white/80 bg-white/70 p-6 shadow-[0_8px_30px_rgba(16,43,89,0.04)] backdrop-blur-md md:p-8"

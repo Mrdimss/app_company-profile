@@ -1,5 +1,4 @@
 
-import type { Project } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { getPublishedProjects } from "@/lib/content";
@@ -9,10 +8,10 @@ import { localePath, translate } from "@/lib/i18n";
 export default async function ProjectsPage() {
   const locale = await getRequestLocale();
   const text = translate(locale).projects;
-  const projects: Project[] = await getPublishedProjects();
+  const projects = await getPublishedProjects();
 
   // Mengambil gambar proyek pertama yang tersedia untuk hero
-  const heroProject = projects.find((project: Project) => project.image);
+  const heroProject = projects.find((project) => project.image);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#F8FBFF] via-[#EAF3FF] to-[#DCEBFF] text-[#0B1F3A]">
@@ -394,7 +393,7 @@ export default async function ProjectsPage() {
             </div>
           ) : (
             <div className="grid gap-x-8 gap-y-14 md:grid-cols-2 md:gap-y-16">
-              {projects.map((project: Project, index: number) => (
+              {projects.map((project, index) => (
                 <article
                   key={project.id}
                   className={`project-card project-fade-up group ${
