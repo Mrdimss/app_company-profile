@@ -1,3 +1,4 @@
+import type { Project, Service }  from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
 
@@ -127,7 +128,7 @@ export async function getCompanySettings() {
   };
 }
 
-export async function getPublishedProjects() {
+export async function getPublishedProjects(): Promise<Project[]> {
   return safeRead(
     async () =>
       prisma.project.findMany({
@@ -138,7 +139,7 @@ export async function getPublishedProjects() {
   );
 }
 
-export async function getPublishedServices() {
+export async function getPublishedServices(): Promise<Service[]> {
   return safeRead(
     async () =>
       prisma.service.findMany({
