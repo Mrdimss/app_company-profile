@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { getLocaleFromPath } from "@/lib/i18n";
 
 type CompanyBrand = {
   companyName: string;
@@ -25,12 +26,13 @@ export default function PublicShell({
   const pathname = usePathname();
 
   if (pathname.startsWith("/admin")) return children;
+  const locale = getLocaleFromPath(pathname);
 
   return (
     <>
-      <Navbar company={company} />
+      <Navbar company={company} locale={locale} />
       {children}
-      <Footer company={company} />
+      <Footer company={company} locale={locale} />
     </>
   );
 }

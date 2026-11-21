@@ -1,7 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
+import { localePath, translate, type Locale } from "@/lib/i18n";
 
 type FooterProps = {
+  locale: Locale;
   company: {
     companyName: string;
     tagline?: string | null;
@@ -13,8 +15,9 @@ type FooterProps = {
   };
 };
 
-export default function Footer({ company }: FooterProps) {
+export default function Footer({ company, locale }: FooterProps) {
   const brandName = company.companyName || "GIRIK";
+  const text = translate(locale);
 
   return (
     <footer className="relative overflow-hidden bg-gradient-to-br from-[#0b1730] via-[#102b59] to-[#123f7a] px-6 py-16 text-white md:px-16 md:py-20 lg:px-24">
@@ -32,12 +35,14 @@ export default function Footer({ company }: FooterProps) {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link
-              href="/"
+              href={`/${locale}`}
               className="inline-flex items-center gap-3 transition-opacity duration-300 hover:opacity-80"
             >
               {company.logoUrl ? (
                 <Image
-                  alt={company.logoAltText || brandName}
+                  alt={company.logoAltText && company.logoAltText !== "Company logo"
+                    ? company.logoAltText
+                    : text.footer.logoAltFallback}
                   width={240}
                   height={96}
                   unoptimized
@@ -54,7 +59,7 @@ export default function Footer({ company }: FooterProps) {
 
             <p className="mt-6 max-w-md text-sm leading-7 text-blue-100/70 md:text-base">
               {company.tagline ||
-                "We create meaningful digital experiences through creativity, technology, and collaboration."}
+                text.footer.taglineFallback}
             </p>
 
             {/* Brand Accent */}
@@ -69,20 +74,21 @@ export default function Footer({ company }: FooterProps) {
           <div>
             <h3 className="mb-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-sky-300">
               <span className="h-px w-5 bg-sky-400" />
-              Navigation
+              {text.footer.navigation}
             </h3>
 
             <nav className="flex flex-col items-start gap-4 text-sm">
               {[
-                { label: "Home", href: "/" },
-                { label: "About", href: "/about" },
-                { label: "Services", href: "/services" },
-                { label: "Projects", href: "/projects" },
-                { label: "Contact", href: "/contact" },
+                { label: text.nav.home, href: "/" },
+                { label: text.nav.about, href: "/about" },
+                { label: text.nav.services, href: "/services" },
+                { label: text.nav.products, href: "/product" },
+                { label: text.nav.projects, href: "/projects" },
+                { label: text.nav.contact, href: "/contact" },
               ].map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={localePath(locale, item.href)}
                   className="group inline-flex items-center gap-2 text-blue-100/75 transition-colors duration-300 hover:text-white"
                 >
                   <span className="h-1 w-0 rounded-full bg-sky-400 transition-all duration-300 group-hover:w-2" />
@@ -96,7 +102,7 @@ export default function Footer({ company }: FooterProps) {
           <div>
             <h3 className="mb-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-sky-300">
               <span className="h-px w-5 bg-sky-400" />
-              Contact
+              {text.footer.contact}
             </h3>
 
             <div className="flex flex-col gap-5 text-sm text-blue-100/75">
@@ -182,7 +188,7 @@ export default function Footer({ company }: FooterProps) {
         <div className="flex flex-col gap-6 pt-7 text-sm md:flex-row md:items-center md:justify-between">
 
           <p className="text-blue-100/55">
-            © {new Date().getFullYear()} {brandName}. All rights reserved.
+            © {new Date().getFullYear()} {brandName}. {text.footer.copyright}
           </p>
 
           {/* Social Links */}
@@ -213,10 +219,10 @@ export default function Footer({ company }: FooterProps) {
           </div>
 
           <Link
-            href="/contact"
+            href={localePath(locale, "/contact")}
             className="group inline-flex w-fit items-center gap-2 rounded-full border border-sky-300/30 bg-sky-300/10 px-5 py-2.5 font-medium text-sky-200 transition-all duration-300 hover:border-sky-300 hover:bg-sky-300 hover:text-[#0b1730]"
           >
-            Let&apos;s Talk
+            {text.footer.talk}
             <span className="transition-transform duration-300 group-hover:translate-x-1">
               →
             </span>

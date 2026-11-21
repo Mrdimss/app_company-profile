@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
@@ -42,7 +43,7 @@ export async function PUT(request: Request) {
       });
       const emailChanged = currentAdmin?.email !== email;
 
-      const admin = await prisma.$transaction(async (transaction) => {
+      const admin = await prisma.$transaction(async (transaction: Prisma.TransactionClient) => {
         const updated = await transaction.adminUser.update({
           where: { id: session.admin.id },
           data: { name, email },

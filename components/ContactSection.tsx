@@ -1,7 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import { useLocale } from "@/components/LocaleProvider";
+import { localePath, translate } from "@/lib/i18n";
 
 export default function ContactSection() {
+  const locale = useLocale();
+  const text = translate(locale).home;
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#eaf3ff] via-[#d8eaff] to-[#b8e3ff] px-6 py-28 md:px-16 md:py-36 lg:px-24">
 
@@ -18,32 +25,30 @@ export default function ContactSection() {
             <div className="mb-7 inline-flex items-center gap-3 rounded-full border border-blue-200 bg-white/70 px-4 py-2 shadow-sm backdrop-blur-sm">
               <span className="h-2 w-2 animate-pulse rounded-full bg-blue-600" />
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-800">
-                Get In Touch
+                {text.contactLabel}
               </p>
             </div>
 
             {/* Heading */}
             <h2 className="text-5xl font-semibold leading-[1.05] tracking-tight text-[#101a30] md:text-7xl lg:text-8xl">
-              Have an idea?
+              {text.contactTitleLead}
               <br />
               <span className="bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 bg-clip-text text-transparent">
-                Let&apos;s make it happen.
+                {text.contactTitleAccent}
               </span>
             </h2>
 
             {/* Description */}
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-slate-600 md:text-xl">
-              Whether you have a project in mind or simply want to discuss
-              an idea, we would love to hear from you.
-              Let&apos;s build something great together.
+              {text.contactDescription}
             </p>
 
             {/* Button */}
             <Link
-              href="/contact"
+              href={localePath(locale, "/contact")}
               className="group mt-10 inline-flex items-center gap-4 rounded-full bg-blue-700 px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-xl hover:shadow-blue-700/30"
             >
-              Start a Conversation
+              {text.startConversation}
               <span className="text-lg transition-transform duration-300 group-hover:translate-x-1.5">
                 →
               </span>
@@ -53,7 +58,7 @@ export default function ContactSection() {
             <div className="mt-16 h-px w-full max-w-3xl bg-gradient-to-r from-blue-400/60 via-blue-300/40 to-transparent md:mt-20" />
 
             <p className="mt-5 text-sm font-medium tracking-wide text-blue-800/70">
-              We&apos;re ready to hear from you.
+              {text.ready}
             </p>
           </div>
         </Reveal>

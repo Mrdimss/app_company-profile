@@ -4,6 +4,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { localePath, translate } from "@/lib/i18n";
 
 function Reveal({
   children,
@@ -51,31 +53,15 @@ function Reveal({
   );
 }
 
-const goals = [
-  {
-    number: "01",
-    title: "Our Vision",
-    description:
-      "To become one of the world’s most trusted partners who helps businesses grow with confidence.",
-    icon: "◎",
-  },
-  {
-    number: "02",
-    title: "Our Mission",
-    description:
-      "To simplify global commerce by connecting businesses with the right sourcing and distribution opportunities.",
-    icon: "↗",
-  },
-  {
-    number: "03",
-    title: "Our Purpose",
-    description:
-      "We believe commerce is one of the strongest forces for growth, impact, and real value creation.",
-    icon: "✦",
-  },
-];
-
 export default function AboutPage() {
+  const locale = useLocale();
+  const text = translate(locale).about;
+  const goals = [
+    { number: "01", title: text.vision, description: text.visionDescription, icon: "◎" },
+    { number: "02", title: text.mission, description: text.missionDescription, icon: "↗" },
+    { number: "03", title: text.purpose, description: text.purposeDescription, icon: "✦" },
+  ];
+
   return (
     <main className="overflow-hidden bg-[#f7faff]">
 
@@ -102,23 +88,23 @@ export default function AboutPage() {
                 <span className="h-2.5 w-2.5 rounded-full bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
 
                 <span className="text-xs font-bold uppercase tracking-[0.25em] text-blue-800">
-                  About Us
+                  {text.heroLabel}
                 </span>
               </div>
             </Reveal>
 
             <Reveal delay={150}>
               <h1 className="text-5xl font-bold leading-[1.08] tracking-tight text-[#101a30] sm:text-6xl md:text-6xl lg:text-7xl">
-                About{" "}
+                {text.titlePrefix}{" "}
                 <span className="bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 bg-clip-text text-transparent">
-                  Girik
+                  GIRIK
                 </span>
               </h1>
             </Reveal>
 
             <Reveal delay={250}>
               <p className="mt-7 text-xl font-medium tracking-tight text-[#173b70] md:text-2xl">
-                Trade & Distributor Company
+                {text.subtitle}
               </p>
 
               <div className="mt-7 h-1.5 w-20 rounded-full bg-gradient-to-r from-blue-700 to-sky-400" />
@@ -126,10 +112,7 @@ export default function AboutPage() {
 
             <Reveal delay={350}>
               <p className="mt-7 max-w-xl text-base leading-8 text-slate-600 md:text-lg">
-                Connecting businesses through reliable trading,
-                sourcing, and distribution solutions. We deliver
-                quality products and build trusted partnerships
-                to support business growth.
+                {text.description}
               </p>
             </Reveal>
 
@@ -137,10 +120,10 @@ export default function AboutPage() {
               <div className="mt-9 flex flex-wrap items-center gap-5">
 
                 <Link
-                  href="/contact"
+                  href={localePath(locale, "/contact")}
                   className="group inline-flex items-center gap-4 rounded-full bg-gradient-to-r from-[#0b3478] to-[#0755b5] px-8 py-4 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(11,52,120,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_35px_rgba(11,52,120,0.35)]"
                 >
-                  Work With Us
+                  {text.workWithUs}
 
                   <span className="text-lg transition-transform duration-300 group-hover:translate-x-1.5">
                     →
@@ -148,10 +131,10 @@ export default function AboutPage() {
                 </Link>
 
                 <Link
-                  href="/services"
+                  href={localePath(locale, "/services")}
                   className="inline-flex items-center gap-2 text-sm font-semibold text-[#173b70] transition-colors hover:text-blue-600"
                 >
-                  Explore Services
+                  {text.exploreServices}
                   <span>↗</span>
                 </Link>
 
@@ -164,10 +147,10 @@ export default function AboutPage() {
 
                 <div>
                   <p className="text-sm font-bold text-[#102b59]">
-                    Quality
+                    {text.quality}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    Trusted Products
+                    {text.trustedProducts}
                   </p>
                 </div>
 
@@ -175,10 +158,10 @@ export default function AboutPage() {
 
                 <div>
                   <p className="text-sm font-bold text-[#102b59]">
-                    Innovation
+                    {text.innovation}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    Better Solutions
+                    {text.betterSolutions}
                   </p>
                 </div>
 
@@ -186,10 +169,10 @@ export default function AboutPage() {
 
                 <div>
                   <p className="text-sm font-bold text-[#102b59]">
-                    Partnership
+                    {text.partnership}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    Growing Together
+                    {text.growTogether}
                   </p>
                 </div>
 
@@ -213,7 +196,7 @@ export default function AboutPage() {
 
                   <Image
                     src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=85"
-                    alt="Modern corporate office building"
+                    alt={text.officeImageAlt}
                     fill
                     priority
                     unoptimized
@@ -228,14 +211,14 @@ export default function AboutPage() {
                     <div className="mb-3 flex items-center gap-2">
                       <span className="h-2 w-2 rounded-full bg-sky-400" />
                       <span className="text-xs font-bold uppercase tracking-[0.25em] text-sky-300">
-                        GIRIK COMPANY
+                        {text.companyBadge}
                       </span>
                     </div>
 
                     <h2 className="max-w-md text-2xl font-bold leading-tight text-white md:text-3xl">
-                      Connecting Businesses.
+                      {text.heroStatementLead}
                       <br />
-                      Delivering Quality.
+                      {text.heroStatementAccent}
                     </h2>
 
                   </div>
@@ -252,11 +235,11 @@ export default function AboutPage() {
 
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">
-                      Our Commitment
+                      {text.floatingCommitment}
                     </p>
 
                     <p className="mt-1 text-base font-bold text-[#101a30]">
-                      Quality & Partnership
+                      {text.floatingPartnership}
                     </p>
                   </div>
                 </div>
@@ -269,7 +252,7 @@ export default function AboutPage() {
                   <div className="h-3 w-3 rounded-full bg-blue-600" />
 
                   <p className="text-xs font-bold text-[#102b59]">
-                    Global Commerce
+                    {text.commerceBadge}
                   </p>
                 </div>
               </div>
@@ -297,7 +280,7 @@ export default function AboutPage() {
 
                 <Image
                   src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1400&q=80"
-                  alt="Global trade and shipping"
+                  alt={text.tradeImageAlt}
                   fill
                   unoptimized
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -309,11 +292,11 @@ export default function AboutPage() {
                 <div className="absolute bottom-5 left-5 right-5 rounded-xl border border-white/40 bg-white/85 p-4 shadow-lg backdrop-blur-md">
 
                   <p className="text-xs font-medium uppercase tracking-wider text-blue-600">
-                    Our Commitment
+                    {text.floatingCommitment}
                   </p>
 
                   <p className="mt-1 text-lg font-semibold text-[#101a30]">
-                    Quality & Partnership
+                    {text.floatingPartnership}
                   </p>
 
                 </div>
@@ -330,50 +313,35 @@ export default function AboutPage() {
                 <span className="h-2 w-2 rounded-full bg-blue-600" />
 
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-800">
-                  Our Story
+                  {text.story}
                 </p>
 
               </div>
 
               <h2 className="text-4xl font-semibold leading-tight tracking-tight text-[#101a30] md:text-5xl">
-                Building connections through{" "}
+                {text.storyTitleLead}{" "}
                 <span className="text-blue-700">
-                  global commerce.
+                  {text.storyTitleAccent}
                 </span>
               </h2>
 
               <p className="mt-7 text-base leading-8 text-slate-600">
-                PT Dunia Sports Interprises is a trading and distribution
-                company based in Jakarta, Indonesia. The company focuses on
-                providing and selling a wide range of products, particularly
-                sports equipment, to meet market needs through various
-                marketing and distribution channels, including direct sales
-                and e-commerce.
+                {text.story1}
               </p>
 
               <p className="mt-5 text-base leading-8 text-slate-600">
-                The company&apos;s business operations are supported by various
-                activities, including merchandising, marketing, trade
-                marketing, logistics, delivery, import, warehouse management,
-                and customer services. In addition to sports products, PT
-                Dunia Sports Interprises also distributes consumer goods such
-                as personal care, skincare and body care, herbal wellness,
-                and food products.
+                {text.story2}
               </p>
 
               <p className="mt-5 text-base leading-8 text-slate-600">
-                Supported by networks across modern markets, general trade,
-                and e-commerce, PT Dunia Sports Interprises continues to
-                develop its trading and distribution operations in an
-                organized manner to provide products and services that meet
-                customer needs.
+                {text.story3}
               </p>
 
               <Link
-                href="/contact"
+                href={localePath(locale, "/contact")}
                 className="group mt-8 inline-flex items-center gap-3 rounded-full bg-blue-700 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-700/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-xl hover:shadow-blue-700/30"
               >
-                Work With Us
+                {text.workWithUs}
 
                 <span className="transition-transform duration-300 group-hover:translate-x-1.5">
                   →
@@ -402,21 +370,20 @@ export default function AboutPage() {
                 <span className="h-2 w-2 rounded-full bg-blue-600" />
 
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-800">
-                  Our Goal
+                  {text.goal}
                 </p>
 
               </div>
 
               <h2 className="text-4xl font-semibold leading-tight tracking-tight text-[#101a30] md:text-6xl">
-                Driving the Future of{" "}
+                {text.goalTitleLead}{" "}
                 <span className="bg-gradient-to-r from-blue-700 to-sky-500 bg-clip-text text-transparent">
-                  Global Commerce.
+                  {text.goalTitleAccent}
                 </span>
               </h2>
 
               <p className="mt-6 max-w-2xl leading-relaxed text-slate-600">
-                Guided by a shared vision, mission, and purpose, we strive to
-                build trusted relationships and create lasting value.
+                {text.goalDescription}
               </p>
 
             </div>
@@ -477,28 +444,27 @@ export default function AboutPage() {
               <span className="h-2 w-2 rounded-full bg-sky-400" />
 
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-200">
-                Let&apos;s Connect
+                {text.connect}
               </p>
 
             </div>
 
             <h2 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight md:text-6xl lg:text-7xl">
-              Partner with PT Dunia Sports Interprises to{" "}
+              {text.ctaTitleLead}{" "}
               <span className="bg-gradient-to-r from-sky-300 to-blue-200 bg-clip-text text-transparent">
-                grow your business globally.
+                {text.ctaTitleAccent}
               </span>
             </h2>
 
             <p className="mt-7 max-w-2xl text-lg leading-relaxed text-blue-100/75">
-              Have a business opportunity or want to learn more about our
-              company? We would love to hear from you.
+              {text.ctaDescription}
             </p>
 
             <Link
-              href="/contact"
+              href={localePath(locale, "/contact")}
               className="group mt-10 inline-flex items-center gap-4 rounded-full bg-sky-400 px-8 py-4 text-sm font-semibold text-[#0b1730] shadow-lg shadow-sky-400/20 transition-all duration-300 hover:-translate-y-1 hover:bg-sky-300 hover:shadow-xl hover:shadow-sky-400/30"
             >
-              Get in Touch
+              {text.getInTouch}
 
               <span className="text-lg transition-transform duration-300 group-hover:translate-x-1.5">
                 →

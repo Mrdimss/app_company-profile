@@ -238,7 +238,11 @@ export default function ContentManager({
         return;
       }
 
-      setMessage("Data berhasil dihapus.");
+      setMessage(
+        result.storageCleanupPending
+          ? "Data berhasil dihapus, tetapi file gambar lama belum terhapus."
+          : "Data berhasil dihapus.",
+      );
       setError("");
 
       if (editingId === id) {
@@ -313,9 +317,11 @@ export default function ContentManager({
       }
 
       setMessage(
-        editingId
-          ? "Data berhasil diperbarui."
-          : "Data berhasil ditambahkan."
+        result.storageCleanupPending
+          ? "Data tersimpan, tetapi file gambar lama belum terhapus."
+          : editingId
+            ? "Data berhasil diperbarui."
+            : "Data berhasil ditambahkan.",
       );
 
       resetForm();

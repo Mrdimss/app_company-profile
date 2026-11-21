@@ -4,8 +4,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { localeHref, localePath, translate, type Locale } from "@/lib/i18n";
 
 type NavbarProps = {
+  locale: Locale;
   company: {
     companyName: string;
     logoUrl?: string | null;
@@ -13,17 +16,24 @@ type NavbarProps = {
   };
 };
 
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  { label: "Services", href: "/services" },
-  { label: "Projects", href: "/projects" },
-  { label: "Product", href: "/product" },
-];
-
-export default function Navbar({ company }: NavbarProps) {
+export default function Navbar({ company, locale }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const text = translate(locale).nav;
   const brandName = company.companyName || "GIRIK";
+  const navItems = [
+    { label: text.home, href: "/" },
+    { label: text.about, href: "/about" },
+    { label: text.services, href: "/services" },
+    { label: text.projects, href: "/projects" },
+    { label: text.products, href: "/product" },
+  ];
+
+  function changeLocale(nextLocale: Locale) {
+    router.push(localeHref(nextLocale, pathname, searchParams.toString()));
+  }
 
   const linkClass =
     "group relative py-2 text-sm font-semibold text-[#0B1F3A] transition-colors duration-300 hover:text-white";
@@ -35,13 +45,15 @@ export default function Navbar({ company }: NavbarProps) {
 
         {/* Logo */}
         <Link
-          href="/"
+          href={`/${locale}`}
           onClick={() => setIsOpen(false)}
           className="group flex items-center gap-3"
         >
           {company.logoUrl ? (
             <Image
-              alt={company.logoAltText || brandName}
+              alt={company.logoAltText && company.logoAltText !== "Company logo"
+                ? company.logoAltText
+                : translate(locale).footer.logoAltFallback}
               width={200}
               height={80}
               loading="eager"
@@ -62,7 +74,7 @@ export default function Navbar({ company }: NavbarProps) {
           {navItems.map((item) => (
             <Link
               key={item.href}
-              href={item.href}
+              href={localePath(locale, item.href)}
               className={linkClass}
             >
               {item.label}
@@ -73,15 +85,37 @@ export default function Navbar({ company }: NavbarProps) {
 
           {/* Contact Button */}
           <Link
-            href="/contact"
+            href={localePath(locale, "/contact")}
             className="group inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-5 py-2.5 text-sm font-semibold text-[#0B1F3A] transition-all duration-300 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:shadow-lg hover:shadow-blue-900/20"
           >
-            Contact Us
+            {text.contactUs}
 
             <span className="transition-transform duration-300 group-hover:translate-x-1">
               →
             </span>
           </Link>
+          <div
+            aria-label={text.language}
+            className="flex items-center rounded-full border border-white/50 bg-white/50 p-1 text-xs font-bold"
+          >
+            {(["id", "en"] as const).map((option, index) => (
+              <span key={option} className="flex items-center">
+                {index > 0 && <span className="px-0.5 text-[#45658a]/60">|</span>}
+                <button
+                  type="button"
+                  aria-pressed={locale === option}
+                  onClick={() => changeLocale(option)}
+                  className={`rounded-full px-2.5 py-1.5 transition-colors ${
+                    locale === option
+                      ? "bg-[#0B1F3A] text-white"
+                      : "text-[#0B1F3A] hover:bg-white/70"
+                  }`}
+                >
+                  {option === "id" ? "ID" : "EN"}
+                </button>
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -89,7 +123,7 @@ export default function Navbar({ company }: NavbarProps) {
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className="flex h-11 w-11 items-center justify-center rounded-xl border border-blue-900/20 bg-white/70 transition-colors hover:bg-white md:hidden"
-          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-label={isOpen ? text.closeMenu : text.openMenu}
           aria-expanded={isOpen}
           aria-controls="mobile-navigation"
         >
@@ -132,7 +166,7 @@ export default function Navbar({ company }: NavbarProps) {
               {navItems.map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={localePath(locale, item.href)}
                   tabIndex={isOpen ? 0 : -1}
                   onClick={() => setIsOpen(false)}
                   className="rounded-xl px-4 py-3 text-sm font-semibold text-[#0B1F3A] transition-all duration-200 hover:bg-white/30 hover:pl-6 hover:text-white"
@@ -141,14 +175,37 @@ export default function Navbar({ company }: NavbarProps) {
                 </Link>
               ))}
 
+              <div className="flex items-center gap-2 px-4 py-3" aria-label={text.language}>
+                {(["id", "en"] as const).map((option, index) => (
+                  <span key={option} className="flex items-center gap-2">
+                    {index > 0 && <span className="text-[#45658a]/60">|</span>}
+                    <button
+                      type="button"
+                      aria-pressed={locale === option}
+                      onClick={() => {
+                        setIsOpen(false);
+                        changeLocale(option);
+                      }}
+                      className={`rounded-full px-3 py-2 text-sm font-bold ${
+                        locale === option
+                          ? "bg-[#0B1F3A] text-white"
+                          : "text-[#0B1F3A] hover:bg-white/70"
+                      }`}
+                    >
+                      {option === "id" ? "ID" : "EN"}
+                    </button>
+                  </span>
+                ))}
+              </div>
+
               {/* Contact Button Mobile */}
               <Link
-                href="/contact"
+                href={localePath(locale, "/contact")}
                 tabIndex={isOpen ? 0 : -1}
                 onClick={() => setIsOpen(false)}
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-semibold text-[#0B1F3A] transition-all duration-300 hover:bg-blue-100"
               >
-                Contact Us
+                {text.contactUs}
                 <span>→</span>
               </Link>
 

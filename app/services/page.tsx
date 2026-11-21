@@ -1,8 +1,12 @@
-
+import type { Service } from "@prisma/client";
 import { getPublishedServices } from "@/lib/content";
+import { getRequestLocale } from "@/lib/request-locale";
+import { translate } from "@/lib/i18n";
 
 export default async function ServicesPage() {
-  const services = await getPublishedServices();
+  const locale = await getRequestLocale();
+  const text = translate(locale).services;
+  const services: Service[] = await getPublishedServices();
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#eaf3ff] via-[#d8eaff] to-[#b8e3ff] px-6 py-20 text-[#102b59] md:px-16 md:py-28 lg:px-24">
@@ -95,20 +99,19 @@ export default async function ServicesPage() {
           <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-blue-200/80 bg-white/60 px-4 py-2 backdrop-blur-sm">
             <span className="h-2 w-2 rounded-full bg-sky-500" />
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#1768ac]">
-              Our Services
+              {text.label}
             </p>
           </div>
 
           <h1 className="max-w-5xl text-4xl font-semibold leading-[1.08] tracking-tight text-[#102b59] sm:text-5xl md:text-7xl">
-            Solutions for{" "}
+            {text.titleLead}{" "}
             <span className="bg-gradient-to-r from-[#1768ac] via-[#2589d8] to-[#54b9ed] bg-clip-text text-transparent">
-              your growth
+              {text.titleAccent}
             </span>
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-8 text-[#45658a] md:text-lg">
-            Discover the services we provide to support your goals,
-            strengthen your business, and create opportunities for growth.
+            {text.description}
           </p>
         </div>
 
@@ -118,11 +121,11 @@ export default async function ServicesPage() {
             className="services-fade-up mt-14 rounded-3xl border border-dashed border-blue-300 bg-white/50 p-8 text-[#45658a] backdrop-blur-sm"
             style={{ animationDelay: "450ms" }}
           >
-            Belum ada layanan yang dipublikasikan.
+            {text.empty}
           </div>
         ) : (
           <div className="mt-14 space-y-5">
-            {services.map((service, index) => (
+            {services.map((service: Service, index: number) => (
               <article
                 key={service.id}
                 className="service-card services-fade-up rounded-3xl border border-white/80 bg-white/70 p-6 shadow-[0_8px_30px_rgba(16,43,89,0.04)] backdrop-blur-md md:p-8"
@@ -169,23 +172,22 @@ export default async function ServicesPage() {
           style={{ animationDelay: "500ms" }}
         >
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#4b85b8]">
-            Let&apos;s Work Together
+            {text.ctaEyebrow}
           </p>
 
           <h2 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-[#102b59] md:text-5xl">
-            Ready to grow your business with us?
+            {text.ctaTitle}
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-8 text-[#45658a]">
-            Let&apos;s discuss your needs and find the right solutions
-            to help you move forward.
+            {text.ctaDescription}
           </p>
 
           <a
-            href="/contact"
+            href={`/${locale}/contact`}
             className="group mt-8 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-[#102b59] to-[#1768ac] px-7 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-900/15 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/25"
           >
-            Contact Us
+            {text.contact}
             <span className="transition-transform duration-300 group-hover:translate-x-1">
               →
             </span>

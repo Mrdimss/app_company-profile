@@ -2,6 +2,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLocale } from "@/components/LocaleProvider";
+import { translate } from "@/lib/i18n";
 
 type Service = {
   id: string | number;
@@ -18,6 +20,8 @@ type ServicesContentProps = {
 export default function ServicesContent({
   services,
 }: ServicesContentProps) {
+  const text = translate(useLocale()).services;
+
   return (
     <main className="px-8 py-20 md:px-16 md:py-28 lg:px-24">
       <div className="mx-auto max-w-7xl">
@@ -29,7 +33,7 @@ export default function ServicesContent({
           transition={{ duration: 0.7 }}
           className="mb-6 text-sm uppercase tracking-[0.3em] text-gray-500"
         >
-          Our Services
+          {text.label}
         </motion.p>
 
         <motion.h1
@@ -38,7 +42,7 @@ export default function ServicesContent({
           transition={{ duration: 0.8, delay: 0.15 }}
           className="max-w-6xl text-5xl font-medium leading-[1] tracking-tight sm:text-6xl md:text-7xl"
         >
-          Solutions for your growth.
+          {text.title}
         </motion.h1>
 
         {/* SERVICE LIST */}
@@ -49,7 +53,7 @@ export default function ServicesContent({
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-12 rounded-2xl border border-dashed border-neutral-300 p-8 text-neutral-500"
           >
-            Belum ada layanan yang dipublikasikan.
+            {text.empty}
           </motion.div>
         ) : (
           <div className="mt-12 space-y-6">

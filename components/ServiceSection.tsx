@@ -1,4 +1,8 @@
+"use client";
+
 import Reveal from "@/components/Reveal";
+import { useLocale } from "@/components/LocaleProvider";
+import { translate } from "@/lib/i18n";
 
 type ServiceItem = {
   id: string;
@@ -9,19 +13,22 @@ type ServiceItem = {
 };
 
 export default function ServicesSection({ services }: { services: ServiceItem[] }) {
+  const locale = useLocale();
+  const text = translate(locale).home;
+
   return (
     <section className="bg-black px-8 py-24 text-white md:px-16 lg:px-24">
       <div className="mx-auto max-w-7xl">
         <Reveal>
           <div className="mb-20">
             <p className="mb-4 text-sm uppercase tracking-[0.3em] text-gray-400">
-              Our Services
+              {text.services}
             </p>
 
             <h2 className="max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">
-              What we can do
+              {text.serviceTitleLead}
               <br />
-              for your business.
+              {text.serviceTitleAccent}
             </h2>
           </div>
         </Reveal>

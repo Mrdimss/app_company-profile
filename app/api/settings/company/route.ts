@@ -3,7 +3,12 @@ import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { getCompanySettings } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
-import { removeUploadedImage, saveUploadedImage } from "@/lib/storage";
+import {
+  InvalidImageUploadError,
+  removeUploadedImage,
+  rollbackUploadedImage,
+  saveUploadedImage,
+} from "@/lib/storage";
 
 function readString(value: unknown): string | undefined {
   if (typeof value === "string") {
@@ -37,6 +42,8 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
+  let uploadedLogoUrl: string | null = null;
+
   try {
     const session = await getAdminSession();
 
@@ -65,9 +72,10 @@ export async function PATCH(request: Request) {
 
     if (logoFile) {
       logoUrl = await saveUploadedImage(logoFile, "logo");
+      uploadedLogoUrl = logoUrl;
     }
 
-    if (removeLogo) {
+    if (removeLogo && !logoFile) {
       logoUrl = null;
     }
 
@@ -94,12 +102,14 @@ export async function PATCH(request: Request) {
       },
     });
 
-    if (logoFile && existing?.logoUrl) {
-      await removeUploadedImage(existing.logoUrl);
-    }
-
-    if (removeLogo && existing?.logoUrl) {
-      await removeUploadedImage(existing.logoUrl);
+    let storageCleanupPending = false;
+    if ((logoFile || removeLogo) && existing?.logoUrl) {
+      try {
+        await removeUploadedImage(existing.logoUrl);
+      } catch (error) {
+        console.error("Previous company logo cleanup failed:", error);
+        storageCleanupPending = true;
+      }
     }
 
     revalidatePath("/");
@@ -107,8 +117,14 @@ export async function PATCH(request: Request) {
     revalidatePath("/services");
     revalidatePath("/product");
 
-    return NextResponse.json({ company });
+    return NextResponse.json({ company, storageCleanupPending });
   } catch (error) {
+    await rollbackUploadedImage(uploadedLogoUrl);
+
+    if (error instanceof InvalidImageUploadError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     console.error("Company settings update failed:", error);
     return NextResponse.json({ error: "Pengaturan perusahaan gagal disimpan." }, { status: 500 });
   }

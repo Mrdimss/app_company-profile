@@ -2,6 +2,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { translate } from "@/lib/i18n";
 
 type FormStatus = {
   type: "success" | "error";
@@ -71,6 +73,8 @@ function Reveal({
 ========================================================= */
 
 export default function ContactPage() {
+  const locale = useLocale();
+  const text = translate(locale).contact;
   const [isSending, setIsSending] = useState(false);
   const [status, setStatus] = useState<FormStatus | null>(null);
   const isSendingRef = useRef(false);
@@ -98,7 +102,7 @@ export default function ContactPage() {
     if (Object.values(fields).some((value) => !value)) {
       setStatus({
         type: "error",
-        message: "Please complete all required fields.",
+        message: text.required,
       });
       return;
     }
@@ -106,7 +110,7 @@ export default function ContactPage() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
       setStatus({
         type: "error",
-        message: "Please enter a valid email address.",
+        message: text.invalidEmail,
       });
       return;
     }
@@ -147,9 +151,7 @@ export default function ContactPage() {
         setStatus({
           type: "error",
           message:
-            typeof responseBody?.error === "string"
-              ? responseBody.error
-              : "Your message could not be sent. Please try again.",
+            text.failed,
         });
         return;
       }
@@ -160,14 +162,13 @@ export default function ContactPage() {
         type: "success",
         message:
           responseBody?.emailSent === false
-            ? "Your message has been received. Email notification is temporarily delayed."
-            : "Thank you. Your message has been submitted successfully.",
+            ? text.notificationDelayed
+              : text.success,
       });
     } catch {
       setStatus({
         type: "error",
-        message:
-          "We could not confirm whether your message was received. Please contact us before submitting again.",
+        message: text.sendUnconfirmed,
       });
     } finally {
       window.clearTimeout(timeoutId);
@@ -193,25 +194,23 @@ export default function ContactPage() {
 
           <Reveal delay={0}>
             <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
-              Contact Us
+              {text.label}
             </p>
           </Reveal>
 
           <Reveal delay={150}>
             <h1 className="mt-5 max-w-5xl text-5xl font-medium leading-[0.95] tracking-[-0.04em] sm:text-6xl md:text-7xl lg:text-[7rem]">
-              Let&apos;s work
+              {text.workTitleLead}
               <br />
               <span className="bg-gradient-to-r from-blue-700 to-sky-400 bg-clip-text text-transparent">
-                together
+                {text.workTitleAccent}
               </span>
             </h1>
           </Reveal>
 
           <Reveal delay={300}>
             <p className="mt-8 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
-              Have a question, business inquiry, or partnership
-              opportunity? Get in touch with PT Dunia Sports
-              Interprises and our team will be happy to assist you
+              {text.description}
             </p>
           </Reveal>
 
@@ -247,14 +246,11 @@ export default function ContactPage() {
 
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
-                    Our Office
+                    {text.office}
                   </p>
 
                   <p className="mt-3 text-sm leading-relaxed text-slate-700">
-                    Jl. Agung Timur 10 No. 13–16, RT 10/RW 14,
-                    Sunter Jaya, Tanjung Priok District, North
-                    Jakarta, Special Capital Region of Jakarta
-                    14350, Indonesia.
+                    {text.officeAddress}
                   </p>
                 </div>
 
@@ -268,7 +264,7 @@ export default function ContactPage() {
                 href="https://wa.me/919891112185"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Chat with us on WhatsApp"
+                aria-label={text.whatsappAria}
                 className="group flex min-h-[190px] flex-col justify-between rounded-xl border border-blue-100 bg-[#eaf3ff] p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
               >
 
@@ -312,7 +308,7 @@ export default function ContactPage() {
             <Reveal delay={300}>
               <a
                 href="mailto:info@girik.com"
-                aria-label="Email Us: info@girik.com"
+                aria-label={`${text.email}: info@girik.com`}
                 className="group flex min-h-[190px] flex-col justify-between rounded-xl border border-blue-100 bg-[#eaf3ff] p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
               >
 
@@ -345,7 +341,7 @@ export default function ContactPage() {
 
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
-                    Email Us
+                    {text.email}
                   </p>
 
                   <p className="mt-3 break-words text-sm text-slate-700">
@@ -363,7 +359,7 @@ export default function ContactPage() {
                 href="https://www.instagram.com/girik.indo.store?dlrf=MTRpY2Fob3AyazlsdQ=="
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Visit our Instagram"
+                aria-label={text.instagramAria}
                 className="group flex min-h-[190px] flex-col justify-between rounded-xl border border-blue-100 bg-[#eaf3ff] p-6 transition-all duration-500 hover:-translate-y-1 hover:bg-[#d8eaff] hover:shadow-lg hover:shadow-blue-100/60"
               >
 
@@ -402,7 +398,7 @@ export default function ContactPage() {
 
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
-                    Follow Us
+                    {text.follow}
                   </p>
 
                   <p className="mt-3 text-sm text-slate-700">
@@ -427,13 +423,13 @@ export default function ContactPage() {
 
           <Reveal delay={0}>
             <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
-              Our Marketplace
+              {text.marketplace}
             </p>
           </Reveal>
 
           <Reveal delay={150}>
             <h2 className="mt-4 text-4xl font-medium text-[#101a30] md:text-6xl">
-              Shop With Us
+              {text.shop}
             </h2>
           </Reveal>
 
@@ -462,11 +458,11 @@ export default function ContactPage() {
                 </div>
 
                 <p className="mt-6 text-xs uppercase tracking-widest text-blue-700">
-                  Operating Hours
+                  {text.hours}
                 </p>
 
                 <p className="mt-2 text-sm text-slate-700">
-                  Monday – Saturday
+                  {text.weekdays}
                 </p>
 
                 <p className="text-sm text-slate-700">
@@ -474,7 +470,7 @@ export default function ContactPage() {
                 </p>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Sunday: Closed
+                  {text.sunday}
                 </p>
 
               </a>
@@ -503,11 +499,11 @@ export default function ContactPage() {
                 </div>
 
                 <p className="mt-6 text-xs uppercase tracking-widest text-blue-700">
-                  Operating Hours
+                  {text.hours}
                 </p>
 
                 <p className="mt-2 text-sm text-slate-700">
-                  Monday – Saturday
+                  {text.weekdays}
                 </p>
 
                 <p className="text-sm text-slate-700">
@@ -515,7 +511,7 @@ export default function ContactPage() {
                 </p>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Sunday: Closed
+                  {text.sunday}
                 </p>
 
               </a>
@@ -535,23 +531,19 @@ export default function ContactPage() {
 
           <Reveal delay={0}>
             <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
-              Our Location
+              {text.location}
             </p>
           </Reveal>
 
           <Reveal delay={150}>
             <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight text-[#101a30] md:text-6xl">
-              Our team is ready to
-              <br />
-              work with you.
+              {text.locationTitle}
             </h2>
           </Reveal>
 
           <Reveal delay={300}>
             <p className="mt-6 max-w-2xl leading-relaxed text-slate-600">
-              Visit our office or contact us to discuss your
-              business, product distribution, and partnership
-              opportunities.
+              {text.locationDescription}
             </p>
           </Reveal>
 
@@ -563,17 +555,16 @@ export default function ContactPage() {
               <div className="grid gap-6 md:grid-cols-[180px_1fr_auto] md:items-center">
 
                 <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
-                  Rukan
+                  {text.officeType}
                 </p>
 
                 <div>
                   <p className="text-lg font-medium text-[#101a30]">
-                    Girik Office
+                    {text.officeName}
                   </p>
 
                   <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
-                    No.13-16, Sector-10, Tanjung Priok,
-                    Jakarta, 14350, Indonesia.
+                    {text.officeAddressSecondary}
                   </p>
                 </div>
 
@@ -593,17 +584,16 @@ export default function ContactPage() {
               <div className="grid gap-6 md:grid-cols-[180px_1fr_auto] md:items-center">
 
                 <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
-                  Business Network
+                  {text.network}
                 </p>
 
                 <div>
                   <p className="text-lg font-medium text-[#101a30]">
-                    Global Distribution
+                    {text.distribution}
                   </p>
 
                   <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
-                    Supporting product sourcing, marketing,
-                    logistics, and distribution activities.
+                    {text.distributionDescription}
                   </p>
                 </div>
 
@@ -628,22 +618,21 @@ export default function ContactPage() {
 
           <Reveal delay={0}>
             <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
-              Contact Us Form
+              {text.formLabel}
             </p>
           </Reveal>
 
           <Reveal delay={150}>
             <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight text-[#101a30] md:text-6xl">
-              Ready to work
+              {text.formTitleLead}
               <br />
-              with us?
+              {text.formTitleAccent}
             </h2>
           </Reveal>
 
           <Reveal delay={300}>
             <p className="mt-6 max-w-2xl leading-relaxed text-slate-600">
-              Send us a message and tell us how we can help
-              your business.
+              {text.formDescription}
             </p>
           </Reveal>
 
@@ -661,11 +650,11 @@ export default function ContactPage() {
 
                 <div>
                   <p className="text-lg font-medium">
-                    Schedule a Free Consultation
+                    {text.consultationTitle}
                   </p>
 
                   <p className="mt-1 text-xs text-blue-100/80">
-                    Tell us about your business and your needs.
+                    {text.consultationDescription}
                   </p>
                 </div>
 
@@ -683,7 +672,7 @@ export default function ContactPage() {
 
                 <div>
                   <label className="mb-2 block text-xs font-medium text-slate-700">
-                    First name <span className="text-red-500">*</span>
+                    {text.firstName} <span className="text-red-500">*</span>
                   </label>
 
                   <input
@@ -692,7 +681,7 @@ export default function ContactPage() {
                     required
                     maxLength={80}
                     autoComplete="given-name"
-                    placeholder="First name"
+                    placeholder={text.firstName}
                     className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
@@ -701,7 +690,7 @@ export default function ContactPage() {
 
                 <div>
                   <label className="mb-2 block text-xs font-medium text-slate-700">
-                    Last name <span className="text-red-500">*</span>
+                    {text.lastName} <span className="text-red-500">*</span>
                   </label>
 
                   <input
@@ -710,7 +699,7 @@ export default function ContactPage() {
                     required
                     maxLength={80}
                     autoComplete="family-name"
-                    placeholder="Last name"
+                    placeholder={text.lastName}
                     className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
@@ -719,7 +708,7 @@ export default function ContactPage() {
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-xs font-medium text-slate-700">
-                    Email <span className="text-red-500">*</span>
+                    {text.email} <span className="text-red-500">*</span>
                   </label>
 
                   <input
@@ -728,7 +717,7 @@ export default function ContactPage() {
                     required
                     maxLength={254}
                     autoComplete="email"
-                    placeholder="your@email.com"
+                    placeholder={text.emailPlaceholder}
                     className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
@@ -737,7 +726,7 @@ export default function ContactPage() {
 
                 <div>
                   <label className="mb-2 block text-xs font-medium text-slate-700">
-                    Phone <span className="text-red-500">*</span>
+                    {text.phone} <span className="text-red-500">*</span>
                   </label>
 
                   <input
@@ -746,7 +735,7 @@ export default function ContactPage() {
                     required
                     maxLength={40}
                     autoComplete="tel"
-                    placeholder="+62"
+                    placeholder={text.phonePlaceholder}
                     className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
@@ -755,7 +744,7 @@ export default function ContactPage() {
 
                 <div>
                   <label className="mb-2 block text-xs font-medium text-slate-700">
-                    Company <span className="text-red-500">*</span>
+                    {text.company} <span className="text-red-500">*</span>
                   </label>
 
                   <input
@@ -764,7 +753,7 @@ export default function ContactPage() {
                     required
                     maxLength={120}
                     autoComplete="organization"
-                    placeholder="Company name"
+                    placeholder={text.company}
                     className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
@@ -773,7 +762,7 @@ export default function ContactPage() {
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-xs font-medium text-slate-700">
-                    Country <span className="text-red-500">*</span>
+                    {text.country} <span className="text-red-500">*</span>
                   </label>
 
                   <input
@@ -782,7 +771,7 @@ export default function ContactPage() {
                     required
                     maxLength={100}
                     autoComplete="country-name"
-                    placeholder="Country"
+                    placeholder={text.country}
                     className="w-full rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
@@ -791,7 +780,7 @@ export default function ContactPage() {
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-xs font-medium text-slate-700">
-                    Message <span className="text-red-500">*</span>
+                    {text.message} <span className="text-red-500">*</span>
                   </label>
 
                   <textarea
@@ -799,7 +788,7 @@ export default function ContactPage() {
                     required
                     rows={7}
                     maxLength={5000}
-                    placeholder="To better assist you, please describe how we can help."
+                    placeholder={text.messagePlaceholder}
                     className="w-full resize-none rounded-lg border border-blue-100 bg-[#f7faff] px-4 py-4 text-sm text-[#101a30] outline-none transition duration-300 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
@@ -813,7 +802,7 @@ export default function ContactPage() {
                     disabled={isSending}
                     className="rounded-full bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-4 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-200 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {isSending ? "Sending..." : "Send Message →"}
+                    {isSending ? text.sending : `${text.submit} →`}
                   </button>
 
                   {status && (
@@ -851,11 +840,11 @@ export default function ContactPage() {
             <div className="mb-8">
 
               <p className="text-xs uppercase tracking-[0.3em] text-blue-700">
-                Find Us
+                {text.findUs}
               </p>
 
               <h2 className="mt-4 text-4xl font-medium tracking-tight text-[#101a30] md:text-6xl">
-                Visit Our Office
+                {text.visitOffice}
               </h2>
 
               <p className="mt-4 max-w-2xl text-slate-600">
@@ -881,7 +870,7 @@ export default function ContactPage() {
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                   allowFullScreen
-                  title="PT Dunia Sports Interprises Location"
+                  title={text.mapTitle}
                 />
 
               </div>
@@ -892,7 +881,7 @@ export default function ContactPage() {
 
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-blue-700">
-                    Office Address
+                    {text.officeAddressLabel}
                   </p>
 
                   <p className="mt-2 text-sm text-slate-700">
@@ -907,7 +896,7 @@ export default function ContactPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-full bg-blue-700 px-7 py-4 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-blue-800 hover:shadow-lg hover:shadow-blue-200"
                 >
-                  Open in Google Maps
+                  {text.openMaps}
 
                   <span className="ml-4">
                     →
@@ -935,15 +924,15 @@ export default function ContactPage() {
 
           <Reveal delay={0}>
             <p className="text-xs uppercase tracking-[0.3em] text-blue-200">
-              Let&apos;s Connect
+              {text.connect}
             </p>
           </Reveal>
 
           <Reveal delay={200}>
             <h2 className="mt-5 max-w-4xl text-4xl font-medium leading-tight tracking-tight text-white md:text-6xl">
-              Let&apos;s build meaningful
+              {text.closingTitleLead}
               <br />
-              business opportunities together.
+              {text.closingTitleAccent}
             </h2>
           </Reveal>
 

@@ -4,6 +4,9 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/components/LocaleProvider";
+import { translate } from "@/lib/i18n";
+import { localePath } from "@/lib/i18n";
 
 type ProductItem = {
   id: string;
@@ -66,9 +69,11 @@ function Reveal({
 
 export default function ProductPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const text = translate(locale).products;
 
   const [products, setProducts] = useState<ProductItem[]>([]);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState<string>(text.all);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -101,7 +106,7 @@ export default function ProductPage() {
   // CATEGORY LIST
   const categories = useMemo(
     () => [
-      "All",
+      text.all,
       ...Array.from(
         new Set(
           products
@@ -110,7 +115,7 @@ export default function ProductPage() {
         )
       ),
     ],
-    [products]
+    [products, text.all]
   );
 
   // SEARCH + CATEGORY FILTER
@@ -119,7 +124,7 @@ export default function ProductPage() {
 
     return products.filter((product) => {
       const matchesCategory =
-        activeCategory === "All" ||
+        activeCategory === text.all ||
         product.category === activeCategory;
 
       const matchesSearch =
@@ -130,17 +135,17 @@ export default function ProductPage() {
 
       return matchesCategory && matchesSearch;
     });
-  }, [products, activeCategory, searchQuery]);
+  }, [products, activeCategory, searchQuery, text.all]);
 
   // OPEN PRODUCT DETAIL
   function openDetail(productId: string) {
-    router.push(`/DetailProduk?id=${encodeURIComponent(productId)}`);
+    router.push(`${localePath(locale, "/DetailProduk")}?id=${encodeURIComponent(productId)}`);
   }
 
   // RESET SEARCH AND CATEGORY
   function resetFilters() {
     setSearchQuery("");
-    setActiveCategory("All");
+    setActiveCategory(text.all);
   }
 
   return (
@@ -226,24 +231,23 @@ export default function ProductPage() {
               <div className="inline-flex items-center gap-3 rounded-full border border-blue-200/70 bg-blue-100/70 px-5 py-2.5 backdrop-blur-md">
                 <span className="h-3 w-3 rounded-full bg-blue-600" />
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
-                  Our Products
+                  {text.label}
                 </p>
               </div>
             </Reveal>
 
             <Reveal delay={150}>
               <h1 className="mt-7 text-5xl font-extrabold leading-[1.05] tracking-tight text-[#0B1F3A] sm:text-6xl md:text-7xl lg:text-[76px]">
-                Discover Our
+                {text.titleLead}
                 <span className="block bg-gradient-to-r from-[#075BEA] via-[#1768D8] to-[#2998F0] bg-clip-text text-transparent">
-                  Products.
+                  {text.titleAccent}
                 </span>
               </h1>
             </Reveal>
 
             <Reveal delay={250}>
               <p className="mt-7 max-w-xl text-base font-medium leading-8 text-[#344F75] md:text-lg">
-                Explore our curated collection of products and solutions,
-                designed to support your needs with quality and reliability.
+                {text.description}
               </p>
             </Reveal>
 
@@ -251,7 +255,7 @@ export default function ProductPage() {
               <div className="mt-8 flex items-center gap-5">
                 <span className="h-[3px] w-16 rounded-full bg-blue-600" />
                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-blue-600">
-                  Quality · Innovation · Reliability
+                  {text.qualitiesLine}
                 </span>
               </div>
             </Reveal>
@@ -264,17 +268,17 @@ export default function ProductPage() {
                   href="#product-collection"
                   className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-[#075BEA] to-[#168BFA] px-8 py-4 text-sm font-bold text-white shadow-xl shadow-blue-600/25 transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
                 >
-                  View Products
+                  {text.view}
                   <span className="transition-transform duration-300 group-hover:translate-x-1">
                     →
                   </span>
                 </a>
 
                 <a
-                  href="/about"
+                  href={localePath(locale, "/about")}
                   className="inline-flex items-center gap-2 rounded-full border-2 border-blue-600 bg-white/60 px-8 py-4 text-sm font-bold text-[#0B1F3A] backdrop-blur-sm transition duration-300 hover:bg-white"
                 >
-                  Learn More
+                  {text.learnMore}
                 </a>
 
               </div>
@@ -296,7 +300,7 @@ export default function ProductPage() {
                 <div className="relative z-10 h-[340px] w-full md:h-[500px]">
                   <Image
                     src="/images/produk-company.png"
-                    alt="GIRIK Sports Products"
+                    alt={text.imageAlt}
                     fill
                     priority
                     unoptimized
@@ -309,10 +313,10 @@ export default function ProductPage() {
                   <div>
                     <p className="text-7xl">🏸</p>
                     <p className="mt-4 text-sm font-bold text-[#0B1F3A]">
-                      GIRIK Sports Collection
+                      {text.collectionFallback}
                     </p>
                     <p className="mt-2 text-xs text-slate-600">
-                      Quality Sports Equipment
+                      {text.equipmentFallback}
                     </p>
                   </div>
                 </div>
@@ -321,10 +325,10 @@ export default function ProductPage() {
               {/* FLOATING LABEL */}
               <div className="absolute bottom-5 left-0 z-20 rounded-2xl border border-white/70 bg-white/85 px-5 py-3 shadow-xl backdrop-blur-xl">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600">
-                  GIRIK Collection
+                  {text.collectionFallback}
                 </p>
                 <p className="mt-1 text-sm font-bold text-[#0B1F3A]">
-                  Quality You Can Trust
+                  {text.trust}
                 </p>
               </div>
 
@@ -347,10 +351,10 @@ export default function ProductPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                  Premium Quality
+                  {text.quality}
                 </h3>
                 <p className="mt-1 text-xs text-slate-500">
-                  Best quality products
+                  {text.qualityDescription}
                 </p>
               </div>
             </div>
@@ -362,10 +366,10 @@ export default function ProductPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                  Innovative Solutions
+                  {text.solutions}
                 </h3>
                 <p className="mt-1 text-xs text-slate-500">
-                  Modern and creative
+                  {text.solutionsDescription}
                 </p>
               </div>
             </div>
@@ -377,10 +381,10 @@ export default function ProductPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                  Trusted Partner
+                  {text.partner}
                 </h3>
                 <p className="mt-1 text-xs text-slate-500">
-                  Your reliable partner
+                  {text.partnerDescription}
                 </p>
               </div>
             </div>
@@ -392,10 +396,10 @@ export default function ProductPage() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                  24/7 Support
+                  {text.support}
                 </h3>
                 <p className="mt-1 text-xs text-slate-500">
-                  Always here for you
+                  {text.supportDescription}
                 </p>
               </div>
             </div>
@@ -413,7 +417,7 @@ export default function ProductPage() {
             <div
               className="flex gap-3 overflow-x-auto py-5"
               role="group"
-              aria-label="Filter products by category"
+              aria-label={text.filter}
             >
               {categories.map((category) => (
                 <button
@@ -447,7 +451,7 @@ export default function ProductPage() {
                 htmlFor="product-search"
                 className="mb-3 block text-xs font-bold uppercase tracking-[0.2em] text-[#1768ac]"
               >
-                Search Our Products
+                {text.searchLabel}
               </label>
 
               <div className="relative">
@@ -474,7 +478,7 @@ export default function ProductPage() {
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by product name, category, or description..."
+                  placeholder={text.searchPlaceholder}
                   className="w-full rounded-full border border-blue-200 bg-white/90 py-4 pl-14 pr-14 text-sm text-[#0B1F3A] shadow-sm outline-none backdrop-blur-md transition duration-300 placeholder:text-[#8ba8c5] focus:border-[#2589d8] focus:bg-white focus:ring-4 focus:ring-blue-100"
                 />
 
@@ -482,7 +486,7 @@ export default function ProductPage() {
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    aria-label="Clear search"
+                    aria-label={text.clearSearch}
                     className="absolute inset-y-0 right-5 text-2xl text-[#6684a6] transition hover:text-[#0B1F3A]"
                   >
                     ×
@@ -493,7 +497,7 @@ export default function ProductPage() {
 
               {searchQuery.trim() && (
                 <p className="mt-3 text-xs text-[#6684a6]">
-                  Search results for:{" "}
+                  {text.results}{" "}
                   <span className="font-semibold text-[#1768ac]">
                     {searchQuery}
                   </span>
@@ -519,17 +523,17 @@ export default function ProductPage() {
 
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#1768ac]">
-                  Our Collection
+                  {text.collection}
                 </p>
 
                 <p className="mt-2 text-sm text-[#45658a]">
                   {loading
-                    ? "Loading products..."
+                    ? text.loading
                     : `${filteredProducts.length} ${
                         filteredProducts.length === 1
-                          ? "Product"
-                          : "Products"
-                      } found`}
+                          ? text.productSingular
+                          : text.productPlural
+                      } ${text.found}`}
                 </p>
               </div>
 
@@ -544,7 +548,7 @@ export default function ProductPage() {
           {loading ? (
             <div
               className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
-              aria-label="Loading products"
+              aria-label={text.loading}
             >
               {[1, 2, 3].map((item) => (
                 <div
@@ -578,7 +582,7 @@ export default function ProductPage() {
                         <button
                           type="button"
                           onClick={() => openDetail(product.id)}
-                          aria-label={`View ${product.name} details`}
+                          aria-label={text.viewDetailsTemplate.replace("{name}", product.name)}
                           className="relative block aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-100 to-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2589d8] focus-visible:ring-offset-2"
                         >
                           {product.image ? (
@@ -592,7 +596,7 @@ export default function ProductPage() {
                             />
                           ) : (
                             <div className="flex h-full items-center justify-center text-sm text-[#45658a]">
-                              No image available
+                              {text.noImage}
                             </div>
                           )}
 
@@ -607,7 +611,7 @@ export default function ProductPage() {
                         <div className="px-3 pb-4 pt-5">
 
                           <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#5893c5]">
-                            {product.category || "General"}
+                            {product.category || text.general}
                           </p>
 
                           <h2 className="mt-2 text-xl font-bold leading-snug text-[#0B1F3A]">
@@ -620,7 +624,7 @@ export default function ProductPage() {
                               onClick={() => openDetail(product.id)}
                               className="group/link inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#1768ac] transition-colors hover:text-[#0B1F3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2589d8] focus-visible:ring-offset-4"
                             >
-                              View Product
+                              {text.viewProduct}
                               <span className="transition-transform duration-300 group-hover/link:translate-x-1">
                                 →
                               </span>
@@ -644,13 +648,13 @@ export default function ProductPage() {
                   </div>
 
                   <h2 className="mt-5 text-xl font-bold text-[#0B1F3A]">
-                    No products found
+                    {text.empty}
                   </h2>
 
                   <p className="mt-2 text-sm leading-7 text-[#45658a]">
                     {searchQuery.trim()
-                      ? `No products match "${searchQuery}". Try another keyword.`
-                      : "There are no products in this category yet."}
+                      ? text.noSearchMatch.replace("{query}", searchQuery)
+                      : text.categoryEmpty}
                   </p>
 
                   <button
@@ -658,7 +662,7 @@ export default function ProductPage() {
                     onClick={resetFilters}
                     className="mt-6 rounded-full bg-[#0B1F3A] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#075BEA]"
                   >
-                    View All Products
+                    {text.reset}
                   </button>
 
                 </div>
@@ -685,33 +689,32 @@ export default function ProductPage() {
             <div className="inline-flex items-center gap-3 rounded-full border border-sky-300/20 bg-white/5 px-4 py-2">
               <span className="h-2 w-2 rounded-full bg-sky-400" />
               <p className="text-xs font-bold uppercase tracking-[0.3em] text-sky-300">
-                Discover More
+                {text.ctaEyebrow}
               </p>
             </div>
           </Reveal>
 
           <Reveal delay={200}>
             <h2 className="mt-6 max-w-4xl text-3xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-              Quality products for{" "}
+              {text.ctaTitleLead}{" "}
               <span className="bg-gradient-to-r from-sky-300 to-blue-200 bg-clip-text text-transparent">
-                every need
+                {text.ctaTitleAccent}
               </span>
             </h2>
           </Reveal>
 
           <Reveal delay={350}>
             <p className="mt-6 max-w-xl text-sm leading-8 text-blue-100/70 md:text-base">
-              Need more information about our products? Get in touch
-              with our team and let&apos;s find the right solution for you.
+              {text.ctaDescription}
             </p>
           </Reveal>
 
           <Reveal delay={450}>
             <a
-              href="/contact"
+              href={localePath(locale, "/contact")}
               className="group mt-9 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-sky-400 to-blue-500 px-8 py-4 text-sm font-bold text-[#08172F] shadow-lg shadow-blue-950/20 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/30"
             >
-              Contact Us
+              {text.contact}
               <span className="transition-transform duration-300 group-hover:translate-x-1">
                 →
               </span>

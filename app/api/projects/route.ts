@@ -3,7 +3,11 @@ import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { getPublishedProjects, getUniqueSlug } from "@/lib/content";
 import { prisma } from "@/lib/prisma";
-import { saveUploadedImage } from "@/lib/storage";
+import {
+  InvalidImageUploadError,
+  rollbackUploadedImage,
+  saveUploadedImage,
+} from "@/lib/storage";
 
 function readString(value: unknown): string | undefined {
   if (typeof value === "string") {
@@ -69,6 +73,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  let uploadedImageUrl: string | null = null;
+
   try {
     const session = await getAdminSession();
 
@@ -101,6 +107,7 @@ export async function POST(request: Request) {
 
     if (imageFile) {
       imageUrl = await saveUploadedImage(imageFile, "project");
+      uploadedImageUrl = imageUrl;
     }
 
     const item = await prisma.project.create({
@@ -121,6 +128,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ item }, { status: 201 });
   } catch (error) {
+    await rollbackUploadedImage(uploadedImageUrl);
+
+    if (error instanceof InvalidImageUploadError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return NextResponse.json({ error: "Slug project sudah digunakan." }, { status: 409 });
     }

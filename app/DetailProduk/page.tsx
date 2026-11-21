@@ -4,6 +4,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { translate } from "@/lib/i18n";
+import { localePath } from "@/lib/i18n";
 
 type ProductItem = {
   id: string;
@@ -17,6 +20,8 @@ type ProductItem = {
 
 function ProductDetails({ id }: { id: string | null }) {
   const router = useRouter();
+  const locale = useLocale();
+  const text = translate(locale).detail;
 
   const [product, setProduct] = useState<ProductItem | null>(null);
   const [loading, setLoading] = useState(id !== null);
@@ -67,10 +72,10 @@ function ProductDetails({ id }: { id: string | null }) {
 
   if (!id || loading || !product) {
     const message = !id
-      ? "The product you are looking for is unavailable."
+      ? text.unavailable
       : loading
-        ? "Loading product..."
-        : "The product you are looking for is unavailable.";
+        ? text.loading
+        : text.unavailable;
 
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f7faff] px-8 text-[#101a30]">
@@ -84,7 +89,7 @@ function ProductDetails({ id }: { id: string | null }) {
           )}
 
           <h1 className="text-3xl font-semibold">
-            {loading ? "Please Wait" : "Product Not Found"}
+            {loading ? text.wait : text.notFound}
           </h1>
 
           <p className="mt-4 text-slate-500">{message}</p>
@@ -92,10 +97,10 @@ function ProductDetails({ id }: { id: string | null }) {
           {!loading && (
             <button
               type="button"
-              onClick={() => router.push("/product")}
+              onClick={() => router.push(localePath(locale, "/product"))}
               className={`${buttonClass} mt-8`}
             >
-              Back to Products
+              {text.backToProducts}
             </button>
           )}
         </div>
@@ -114,7 +119,7 @@ function ProductDetails({ id }: { id: string | null }) {
           className="mb-10 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-700"
         >
           <span>←</span>
-          Back
+          {text.back}
         </button>
 
         <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
@@ -132,7 +137,7 @@ function ProductDetails({ id }: { id: string | null }) {
               />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-slate-400">
-                No image available
+                {text.noImage}
               </div>
             )}
           </div>
@@ -141,7 +146,7 @@ function ProductDetails({ id }: { id: string | null }) {
           <div className="flex flex-col items-start">
 
             <span className="rounded-full border border-blue-100 bg-[#eaf3ff] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
-              {product.category || "General"}
+              {product.category || text.general}
             </span>
 
             <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-[#101a30] md:text-5xl">
@@ -163,11 +168,11 @@ function ProductDetails({ id }: { id: string | null }) {
 
                 <div>
                   <h3 className="font-semibold text-[#101a30]">
-                    Product Quality
+                    {text.quality}
                   </h3>
 
                   <p className="mt-1 text-sm leading-relaxed text-slate-600">
-                    Quality products for your business and personal needs.
+                    {text.qualityDescription}
                   </p>
                 </div>
               </div>
@@ -177,7 +182,7 @@ function ProductDetails({ id }: { id: string | null }) {
             {(product.productUrl || product.tokopediaUrl) && (
               <div className="mt-8 w-full">
                 <h3 className="mb-4 text-sm font-semibold text-[#101a30]">
-                  Buy This Product
+                  {text.buy}
                 </h3>
 
                 <div className="flex flex-wrap gap-4">
@@ -189,7 +194,7 @@ function ProductDetails({ id }: { id: string | null }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Shopee"
-                      aria-label="Beli produk ini di Shopee"
+                      aria-label={`${text.buyOn} Shopee`}
                       className={buttonClass}
                     >
                       <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
@@ -199,7 +204,7 @@ function ProductDetails({ id }: { id: string | null }) {
                           <text x="12" y="18" fill="white" fontSize="9" fontWeight="700" textAnchor="middle">S</text>
                         </svg>
                       </span>
-                      Buy on Shopee
+                      {text.buyOn} Shopee
                       <span>↗</span>
                     </a>
                   )}
@@ -211,7 +216,7 @@ function ProductDetails({ id }: { id: string | null }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Tokopedia"
-                      aria-label="Beli produk ini di Tokopedia"
+                      aria-label={`${text.buyOn} Tokopedia`}
                       className={buttonClass}
                     >
                       <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
@@ -222,7 +227,7 @@ function ProductDetails({ id }: { id: string | null }) {
                           <circle cx="14.5" cy="14" r="1.4" fill="white" />
                         </svg>
                       </span>
-                      Buy on Tokopedia
+                      {text.buyOn} Tokopedia
                       <span>↗</span>
                     </a>
                   )}
@@ -234,10 +239,10 @@ function ProductDetails({ id }: { id: string | null }) {
             {/* Continue Exploring */}
             <button
               type="button"
-              onClick={() => router.push("/product")}
+              onClick={() => router.push(localePath(locale, "/product"))}
               className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 underline underline-offset-4 transition hover:text-blue-700"
             >
-              Continue Exploring
+              {text.continue}
             </button>
 
           </div>
@@ -247,20 +252,19 @@ function ProductDetails({ id }: { id: string | null }) {
         <div className="mt-20 rounded-3xl bg-gradient-to-r from-[#0b1730] via-[#123f7a] to-blue-700 px-8 py-10 text-center text-white md:px-16">
 
           <h2 className="text-2xl font-semibold md:text-3xl">
-            Discover More of Our Products
+            {text.discover}
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-blue-100">
-            Explore our product collection and find the right solutions for
-            your business and personal needs.
+            {text.discoverDescription}
           </p>
 
           <button
             type="button"
-            onClick={() => router.push("/product")}
+            onClick={() => router.push(localePath(locale, "/product"))}
             className="mt-7 rounded-full bg-white px-8 py-3 text-sm font-semibold text-[#123f7a] transition hover:-translate-y-1 hover:bg-blue-50"
           >
-            Explore Products →
+            {text.explore} →
           </button>
 
         </div>
@@ -271,11 +275,14 @@ function ProductDetails({ id }: { id: string | null }) {
 }
 
 export default function DetailProdukPage() {
+  const locale = useLocale();
+  const text = translate(locale).detail;
+
   return (
     <Suspense
       fallback={
         <main className="flex min-h-screen items-center justify-center bg-[#f7faff] text-slate-500">
-          Loading product...
+          {text.loading}
         </main>
       }
     >

@@ -105,7 +105,11 @@ export default function CompanySettingsForm() {
         address: result.company.address ?? current.address,
       }));
       setLogoFile(null);
-      setMessage("Pengaturan perusahaan berhasil disimpan.");
+      setMessage(
+        result.storageCleanupPending
+          ? "Pengaturan tersimpan, tetapi logo lama belum terhapus."
+          : "Pengaturan perusahaan berhasil disimpan.",
+      );
     } catch {
       setError("Tidak dapat terhubung ke server.");
     } finally {

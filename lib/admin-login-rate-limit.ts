@@ -23,29 +23,29 @@ async function consumeThrottleAttempt(scope: string, identifier: string) {
   const id = getThrottleId(scope, identifier);
 
   await prisma.$executeRaw`
-    INSERT INTO \`admin_login_throttles\`
-      (\`id\`, \`attempts\`, \`window_started_at\`, \`blocked_until\`, \`updated_at\`)
+    INSERT INTO "admin_login_throttles" AS throttle
+      ("id", "attempts", "window_started_at", "blocked_until", "updated_at")
     VALUES (${id}, 1, ${now}, NULL, ${now})
-    ON DUPLICATE KEY UPDATE
-      \`attempts\` = IF(
-        \`window_started_at\` <= ${windowExpiredAt}
-          OR \`blocked_until\` <= ${now},
-        1,
-        \`attempts\` + 1
-      ),
-      \`window_started_at\` = IF(
-        \`window_started_at\` <= ${windowExpiredAt}
-          OR \`blocked_until\` <= ${now},
-        ${now},
-        \`window_started_at\`
-      ),
-      \`blocked_until\` = IF(
-        \`window_started_at\` <= ${windowExpiredAt}
-          OR \`blocked_until\` <= ${now},
-        NULL,
-        \`blocked_until\`
-      ),
-      \`updated_at\` = ${now}
+    ON CONFLICT ("id") DO UPDATE SET
+      "attempts" = CASE
+        WHEN throttle."window_started_at" <= ${windowExpiredAt}
+          OR throttle."blocked_until" <= ${now}
+        THEN 1
+        ELSE throttle."attempts" + 1
+      END,
+      "window_started_at" = CASE
+        WHEN throttle."window_started_at" <= ${windowExpiredAt}
+          OR throttle."blocked_until" <= ${now}
+        THEN ${now}
+        ELSE throttle."window_started_at"
+      END,
+      "blocked_until" = CASE
+        WHEN throttle."window_started_at" <= ${windowExpiredAt}
+          OR throttle."blocked_until" <= ${now}
+        THEN NULL
+        ELSE throttle."blocked_until"
+      END,
+      "updated_at" = ${now}
   `;
 
   let throttle = await prisma.adminLoginThrottle.findUniqueOrThrow({

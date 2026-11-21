@@ -90,7 +90,6 @@ const hasDatabaseUrl = () => {
   const url = (process.env.DATABASE_URL ?? "").trim();
 
   return (
-    url.startsWith("mysql://") ||
     url.startsWith("postgres://") ||
     url.startsWith("postgresql://") ||
     url.startsWith("prisma://") ||

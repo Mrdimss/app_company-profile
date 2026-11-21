@@ -2,7 +2,12 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import { removeUploadedImage, saveUploadedImage } from "@/lib/storage";
+import {
+  InvalidImageUploadError,
+  removeUploadedImage,
+  rollbackUploadedImage,
+  saveUploadedImage,
+} from "@/lib/storage";
 import { getUniqueSlug } from "@/lib/content";
 import { InvalidMarketplaceUrlError, normalizeMarketplaceUrl } from "@/lib/marketplace-url";
 
@@ -67,6 +72,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let uploadedImageUrl: string | null = null;
+
   try {
     const session = await getAdminSession();
 
@@ -100,6 +107,7 @@ export async function PATCH(
 
     if (imageFile) {
       nextImageUrl = await saveUploadedImage(imageFile, "product");
+      uploadedImageUrl = nextImageUrl;
     } else if (shouldRemoveImage) {
       nextImageUrl = null;
     }
@@ -137,19 +145,27 @@ export async function PATCH(
       data: updateData,
     });
 
-    if (imageFile && existing.image) {
-      await removeUploadedImage(existing.image);
-    }
-
-    if (shouldRemoveImage && existing.image) {
-      await removeUploadedImage(existing.image);
+    let storageCleanupPending = false;
+    if ((imageFile || shouldRemoveImage) && existing.image) {
+      try {
+        await removeUploadedImage(existing.image);
+      } catch (error) {
+        console.error("Previous product image cleanup failed:", error);
+        storageCleanupPending = true;
+      }
     }
 
     revalidatePath("/");
     revalidatePath("/product");
 
-    return NextResponse.json({ item });
+    return NextResponse.json({ item, storageCleanupPending });
   } catch (error) {
+    await rollbackUploadedImage(uploadedImageUrl);
+
+    if (error instanceof InvalidImageUploadError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     if (error instanceof InvalidMarketplaceUrlError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
@@ -183,14 +199,20 @@ export async function DELETE(
 
     const deleted = await prisma.product.delete({ where: { id } });
 
+    let storageCleanupPending = false;
     if (deleted.image) {
-      await removeUploadedImage(deleted.image);
+      try {
+        await removeUploadedImage(deleted.image);
+      } catch (error) {
+        console.error("Deleted product image cleanup failed:", error);
+        storageCleanupPending = true;
+      }
     }
 
     revalidatePath("/");
     revalidatePath("/product");
 
-    return NextResponse.json({ ok: true, item: deleted });
+    return NextResponse.json({ ok: true, item: deleted, storageCleanupPending });
   } catch (error) {
     console.error("Product delete failed:", error);
     return NextResponse.json({ error: "Produk gagal dihapus." }, { status: 500 });

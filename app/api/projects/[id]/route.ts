@@ -2,7 +2,12 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import { removeUploadedImage, saveUploadedImage } from "@/lib/storage";
+import {
+  InvalidImageUploadError,
+  removeUploadedImage,
+  rollbackUploadedImage,
+  saveUploadedImage,
+} from "@/lib/storage";
 import { getUniqueSlug } from "@/lib/content";
 
 function readString(value: unknown): string | undefined {
@@ -66,6 +71,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  let uploadedImageUrl: string | null = null;
+
   try {
     const session = await getAdminSession();
 
@@ -100,6 +107,7 @@ export async function PATCH(
 
     if (imageFile) {
       nextImageUrl = await saveUploadedImage(imageFile, "project");
+      uploadedImageUrl = nextImageUrl;
     } else if (shouldRemoveImage) {
       nextImageUrl = null;
     }
@@ -137,19 +145,27 @@ export async function PATCH(
       data: updateData,
     });
 
-    if (imageFile && existing.image) {
-      await removeUploadedImage(existing.image);
-    }
-
-    if (shouldRemoveImage && existing.image) {
-      await removeUploadedImage(existing.image);
+    let storageCleanupPending = false;
+    if ((imageFile || shouldRemoveImage) && existing.image) {
+      try {
+        await removeUploadedImage(existing.image);
+      } catch (error) {
+        console.error("Previous project image cleanup failed:", error);
+        storageCleanupPending = true;
+      }
     }
 
     revalidatePath("/");
     revalidatePath("/projects");
 
-    return NextResponse.json({ item });
+    return NextResponse.json({ item, storageCleanupPending });
   } catch (error) {
+    await rollbackUploadedImage(uploadedImageUrl);
+
+    if (error instanceof InvalidImageUploadError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return NextResponse.json({ error: "Slug project sudah digunakan." }, { status: 409 });
     }
@@ -179,14 +195,20 @@ export async function DELETE(
 
     const deleted = await prisma.project.delete({ where: { id } });
 
+    let storageCleanupPending = false;
     if (deleted.image) {
-      await removeUploadedImage(deleted.image);
+      try {
+        await removeUploadedImage(deleted.image);
+      } catch (error) {
+        console.error("Deleted project image cleanup failed:", error);
+        storageCleanupPending = true;
+      }
     }
 
     revalidatePath("/");
     revalidatePath("/projects");
 
-    return NextResponse.json({ ok: true, item: deleted });
+    return NextResponse.json({ ok: true, item: deleted, storageCleanupPending });
   } catch (error) {
     console.error("Project delete failed:", error);
     return NextResponse.json({ error: "Project gagal dihapus." }, { status: 500 });

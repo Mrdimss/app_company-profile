@@ -1,15 +1,18 @@
 
+import type { Project } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { getPublishedProjects } from "@/lib/content";
+import { getRequestLocale } from "@/lib/request-locale";
+import { localePath, translate } from "@/lib/i18n";
 
 export default async function ProjectsPage() {
-  const projects: Awaited<
-    ReturnType<typeof getPublishedProjects>
-  > = await getPublishedProjects();
+  const locale = await getRequestLocale();
+  const text = translate(locale).projects;
+  const projects: Project[] = await getPublishedProjects();
 
   // Mengambil gambar proyek pertama yang tersedia untuk hero
-  const heroProject = projects.find((project) => project.image);
+  const heroProject = projects.find((project: Project) => project.image);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#F8FBFF] via-[#EAF3FF] to-[#DCEBFF] text-[#0B1F3A]">
@@ -117,7 +120,7 @@ export default async function ProjectsPage() {
             <div className="project-fade-in inline-flex items-center gap-3 rounded-full border border-blue-200/80 bg-white/65 px-5 py-2.5 shadow-sm backdrop-blur-md">
               <span className="h-3 w-3 rounded-full bg-sky-500" />
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#075BEA]">
-                Our Projects
+                {text.label}
               </p>
             </div>
 
@@ -125,12 +128,12 @@ export default async function ProjectsPage() {
               className="project-fade-up mt-7 text-5xl font-extrabold leading-[1.05] tracking-tight text-[#0B1F3A] sm:text-6xl md:text-7xl lg:text-[70px] xl:text-[76px]"
               style={{ animationDelay: "150ms" }}
             >
-              Selected Work
+              {text.titleLineOne}
               <span className="block bg-gradient-to-r from-[#075BEA] via-[#168BFA] to-[#39A9F5] bg-clip-text text-transparent">
-                That Makes
+                {text.titleLineTwo}
               </span>
               <span className="block text-[#0B1F3A]">
-                An Impact.
+                {text.titleLineThree}
               </span>
             </h1>
 
@@ -138,8 +141,7 @@ export default async function ProjectsPage() {
               className="project-fade-up mt-7 max-w-xl text-base font-medium leading-8 text-[#405E82] md:text-lg"
               style={{ animationDelay: "300ms" }}
             >
-              Explore our projects, solutions, and work that demonstrate
-              our commitment to quality, innovation, and business growth.
+              {text.description}
             </p>
 
             <div
@@ -148,7 +150,7 @@ export default async function ProjectsPage() {
             >
               <span className="h-[3px] w-16 rounded-full bg-[#075BEA]" />
               <span className="text-xs font-bold uppercase tracking-[0.22em] text-[#1768AC]">
-                Ideas Into Impact
+                {text.tagline}
               </span>
             </div>
 
@@ -161,17 +163,17 @@ export default async function ProjectsPage() {
                 href="#project-collection"
                 className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-[#075BEA] to-[#168BFA] px-8 py-4 text-sm font-bold text-white shadow-xl shadow-blue-600/25 transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
               >
-                View Our Projects
+                {text.view}
                 <span className="transition-transform duration-300 group-hover:translate-x-1">
                   →
                 </span>
               </Link>
 
               <Link
-                href="/about"
+                href={localePath(locale, "/about")}
                 className="inline-flex items-center gap-2 rounded-full border-2 border-[#1768AC] bg-white/60 px-8 py-4 text-sm font-bold text-[#0B1F3A] backdrop-blur-sm transition duration-300 hover:bg-white"
               >
-                Learn More
+                {text.learnMore}
               </Link>
             </div>
 
@@ -185,7 +187,7 @@ export default async function ProjectsPage() {
                   {String(projects.length).padStart(2, "0")}+
                 </p>
                 <p className="mt-1 text-xs font-medium text-[#58799D]">
-                  Published Projects
+                  {text.published}
                 </p>
               </div>
 
@@ -196,7 +198,7 @@ export default async function ProjectsPage() {
                   100%
                 </p>
                 <p className="mt-1 text-xs font-medium text-[#58799D]">
-                  Quality Commitment
+                  {text.quality}
                 </p>
               </div>
             </div>
@@ -236,10 +238,10 @@ export default async function ProjectsPage() {
                       ◈
                     </div>
                     <p className="mt-6 text-xl font-extrabold text-[#0B1F3A]">
-                      GIRIK Projects
+                      {text.visualTitle}
                     </p>
                     <p className="mt-2 text-sm text-[#45658A]">
-                      Creating Better Solutions
+                      {text.heroImageTagline}
                     </p>
                   </div>
                 </div>
@@ -249,13 +251,13 @@ export default async function ProjectsPage() {
               {heroProject && (
                 <div className="absolute bottom-5 left-0 z-20 max-w-[85%] rounded-2xl border border-white/70 bg-white/90 px-5 py-4 shadow-xl backdrop-blur-xl md:bottom-10 md:left-[-20px]">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#075BEA]">
-                    Featured Project
+                    {text.featured}
                   </p>
                   <p className="mt-1 line-clamp-1 text-sm font-extrabold text-[#0B1F3A]">
                     {heroProject.title}
                   </p>
                   <p className="mt-1 text-xs text-[#58799D]">
-                    GIRIK Selected Work
+                    {text.tagline}
                   </p>
                 </div>
               )}
@@ -265,7 +267,7 @@ export default async function ProjectsPage() {
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
                   <span className="text-xs font-bold text-[#0B1F3A]">
-                    Quality First
+                    {text.qualityFirst}
                   </span>
                 </div>
               </div>
@@ -285,10 +287,10 @@ export default async function ProjectsPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                Quality Solutions
+                {text.featureQuality}
               </h3>
               <p className="mt-1 text-xs text-slate-500">
-                Built to Last
+                {text.featureQualityDescription}
               </p>
             </div>
           </div>
@@ -299,10 +301,10 @@ export default async function ProjectsPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                Innovative Approach
+                {text.featureInnovation}
               </h3>
               <p className="mt-1 text-xs text-slate-500">
-                For a Better Tomorrow
+                {text.featureInnovationDescription}
               </p>
             </div>
           </div>
@@ -313,10 +315,10 @@ export default async function ProjectsPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                Trusted Partnership
+                {text.featurePartnership}
               </h3>
               <p className="mt-1 text-xs text-slate-500">
-                Together We Grow
+                {text.featurePartnershipDescription}
               </p>
             </div>
           </div>
@@ -327,10 +329,10 @@ export default async function ProjectsPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-[#0B1F3A] md:text-base">
-                24/7 Support
+                {text.featureSupport}
               </h3>
               <p className="mt-1 text-xs text-slate-500">
-                Always Here for You
+                {text.featureSupportDescription}
               </p>
             </div>
           </div>
@@ -351,26 +353,25 @@ export default async function ProjectsPage() {
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/70 px-4 py-2">
                 <span className="h-2 w-2 rounded-full bg-blue-600" />
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#075BEA]">
-                  Our Portfolio
+                  {text.collectionLabel}
                 </p>
               </div>
 
               <h2 className="mt-5 text-3xl font-extrabold tracking-tight text-[#0B1F3A] md:text-5xl">
-                Explore Our{" "}
+                {text.collectionTitleLead}{" "}
                 <span className="bg-gradient-to-r from-[#075BEA] to-[#39A9F5] bg-clip-text text-transparent">
-                  Projects.
+                  {text.collectionTitleAccent}
                 </span>
               </h2>
 
               <p className="mt-4 max-w-xl text-sm leading-7 text-[#58799D] md:text-base">
-                Discover our selected projects and the solutions we create
-                to deliver meaningful results.
+                {text.collectionDescription}
               </p>
             </div>
 
             <div className="rounded-2xl border border-blue-100 bg-white/70 px-5 py-3 shadow-sm">
               <p className="text-xs text-[#58799D]">
-                Total Published
+                {text.total}
               </p>
               <p className="mt-1 text-2xl font-extrabold text-[#075BEA]">
                 {String(projects.length).padStart(2, "0")}
@@ -385,15 +386,15 @@ export default async function ProjectsPage() {
                 ◇
               </div>
               <h3 className="mt-5 text-xl font-bold text-[#0B1F3A]">
-                No Projects Yet
+                {text.empty}
               </h3>
               <p className="mt-2 text-sm text-[#58799D]">
-                Belum ada project yang dipublikasikan.
+                {text.emptyDescription}
               </p>
             </div>
           ) : (
             <div className="grid gap-x-8 gap-y-14 md:grid-cols-2 md:gap-y-16">
-              {projects.map((project, index) => (
+              {projects.map((project: Project, index: number) => (
                 <article
                   key={project.id}
                   className={`project-card project-fade-up group ${
@@ -416,7 +417,7 @@ export default async function ProjectsPage() {
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center bg-gradient-to-br from-blue-100 to-sky-200 text-sm text-[#45658a]">
-                        No image available
+                        {text.noImage}
                       </div>
                     )}
 
@@ -424,7 +425,7 @@ export default async function ProjectsPage() {
 
                     {/* CATEGORY */}
                     <div className="absolute left-4 top-4 rounded-full border border-white/70 bg-white/90 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#075BEA] shadow-sm backdrop-blur-sm">
-                      {project.category || "General"}
+                      {project.category || text.general}
                     </div>
 
                     {/* NUMBER */}
@@ -472,7 +473,7 @@ export default async function ProjectsPage() {
           <div className="project-fade-in inline-flex items-center gap-3 rounded-full border border-sky-300/20 bg-white/5 px-4 py-2">
             <span className="h-2 w-2 rounded-full bg-sky-400" />
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-sky-300">
-              Have a Project in Mind?
+              {text.ctaEyebrow}
             </p>
           </div>
 
@@ -480,9 +481,9 @@ export default async function ProjectsPage() {
             className="project-fade-up mt-6 max-w-4xl text-3xl font-extrabold leading-tight tracking-tight md:text-5xl lg:text-6xl"
             style={{ animationDelay: "150ms" }}
           >
-            Let&apos;s Create Something{" "}
+            {text.ctaTitleLead}{" "}
             <span className="bg-gradient-to-r from-sky-300 to-blue-200 bg-clip-text text-transparent">
-              Meaningful Together.
+              {text.ctaTitleAccent}
             </span>
           </h2>
 
@@ -490,15 +491,14 @@ export default async function ProjectsPage() {
             className="project-fade-up mt-6 max-w-xl text-sm leading-8 text-blue-100/70 md:text-base"
             style={{ animationDelay: "300ms" }}
           >
-            Contact our team to discuss your business needs and explore
-            opportunities to work together.
+            {text.ctaDescription}
           </p>
 
           <Link
-            href="/contact"
+            href={localePath(locale, "/contact")}
             className="group mt-9 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-sky-400 to-blue-500 px-8 py-4 text-sm font-bold text-[#08172F] shadow-lg shadow-blue-950/20 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/30"
           >
-            Contact Us
+            {text.contact}
             <span className="transition-transform duration-300 group-hover:translate-x-1">
               →
             </span>

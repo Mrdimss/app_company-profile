@@ -1,0 +1,111 @@
+{
+  "generatedOnPlatform": "win32",
+  "projectType": "webapp",
+  "setup": [
+    {
+      "command": "npm",
+      "args": ["ci"],
+      "timeoutSeconds": 600
+    }
+  ],
+  "assertions": [
+    {
+      "name": "prisma-schema-validates",
+      "kind": "process",
+      "command": "npx",
+      "args": ["prisma", "validate"],
+      "env": {
+        "DATABASE_URL": "postgresql://postgres:validation@127.0.0.1:5432/girik?pgbouncer=true",
+        "DIRECT_URL": "postgresql://postgres:validation@127.0.0.1:5432/girik"
+      },
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 120
+    },
+    {
+      "name": "prisma-client-generates",
+      "kind": "process",
+      "command": "npx",
+      "args": ["prisma", "generate"],
+      "env": {
+        "DATABASE_URL": "postgresql://postgres:validation@127.0.0.1:5432/girik?pgbouncer=true",
+        "DIRECT_URL": "postgresql://postgres:validation@127.0.0.1:5432/girik"
+      },
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 120
+    },
+    {
+      "name": "typescript-checks",
+      "kind": "process",
+      "command": "npx",
+      "args": ["tsc", "--noEmit"],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 180
+    },
+    {
+      "name": "tests-pass",
+      "kind": "process",
+      "command": "npm",
+      "args": ["test"],
+      "verificationMethod": "test-results",
+      "expected": "0",
+      "timeoutSeconds": 180
+    },
+    {
+      "name": "migration-files-lint",
+      "kind": "process",
+      "command": "npx",
+      "args": [
+        "eslint",
+        "app/api/products/route.ts",
+        "app/api/products/[id]/route.ts",
+        "app/api/projects/route.ts",
+        "app/api/projects/[id]/route.ts",
+        "app/api/settings/company/route.ts",
+        "components/CompanySettingsForm.tsx",
+        "components/ContentManager.tsx",
+        "lib/admin-login-rate-limit.ts",
+        "lib/content.ts",
+        "lib/storage.ts",
+        "lib/image-validation.ts",
+        "lib/image-validation.test.ts",
+        "next.config.ts",
+        "prisma.config.ts"
+      ],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 180
+    },
+    {
+      "name": "production-build",
+      "kind": "process",
+      "command": "npm",
+      "args": ["run", "build"],
+      "verificationMethod": "exit-code",
+      "expected": "0",
+      "timeoutSeconds": 300
+    },
+    {
+      "name": "homepage-responds",
+      "kind": "http-probe",
+      "startCommand": "npm",
+      "startArgs": ["run", "start", "--", "--port", "3205"],
+      "url": "http://localhost:3205/",
+      "verificationMethod": "http-status",
+      "expected": "200",
+      "timeoutSeconds": 120
+    },
+    {
+      "name": "admin-login-page-responds",
+      "kind": "http-probe",
+      "startCommand": "npm",
+      "startArgs": ["run", "start", "--", "--port", "3205"],
+      "url": "http://localhost:3205/admin/login",
+      "verificationMethod": "http-status",
+      "expected": "200",
+      "timeoutSeconds": 120
+    }
+  ]
+}

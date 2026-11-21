@@ -1,1 +1,1 @@
-ALTER TABLE `products` ADD COLUMN `tokopediaUrl` VARCHAR(191) NULL;
+ALTER TABLE "products" ADD COLUMN "tokopediaUrl" TEXT;

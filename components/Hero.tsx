@@ -3,9 +3,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { localePath, translate } from "@/lib/i18n";
 
 export default function Hero() {
   const [isVisible, setIsVisible] = useState(false);
+  const locale = useLocale();
+  const text = translate(locale).home;
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -48,7 +52,7 @@ export default function Hero() {
             </span>
 
             <span className="text-xs font-bold uppercase tracking-[0.18em] text-blue-900 sm:text-sm">
-              PT Dunia Sports
+              {text.eyebrow}
             </span>
           </div>
 
@@ -61,13 +65,11 @@ export default function Hero() {
             }`}
             style={{ transitionDelay: "120ms" }}
           >
-            WE DISTRIBUTE
+            {text.heroTitleLead}
             <br />
-
             <span className="bg-gradient-to-r from-blue-800 via-blue-600 to-sky-500 bg-clip-text text-transparent">
-              SPORTS
-            </span>{" "}
-            PRODUCTS
+              {text.heroTitleAccent}
+            </span>
           </h1>
 
           {/* Subtitle */}
@@ -79,7 +81,7 @@ export default function Hero() {
             }`}
             style={{ transitionDelay: "200ms" }}
           >
-            Trade & Distributor Company
+            {text.subtitle}
           </h2>
 
           {/* Description */}
@@ -91,9 +93,7 @@ export default function Hero() {
             }`}
             style={{ transitionDelay: "250ms" }}
           >
-            We distribute quality sports products with reliability and care.
-            Connecting businesses through trusted trading, sourcing, and
-            distribution solutions.
+            {text.description}
           </p>
 
           {/* Buttons */}
@@ -106,10 +106,10 @@ export default function Hero() {
             style={{ transitionDelay: "350ms" }}
           >
             <Link
-              href="/projects"
+              href={localePath(locale, "/projects")}
               className="group inline-flex items-center justify-center gap-4 rounded-full bg-blue-800 px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-900 hover:shadow-xl"
             >
-              Explore Our Work
+              {text.explore}
 
               <span className="transition-transform duration-300 group-hover:translate-x-1.5">
                 →
@@ -117,10 +117,10 @@ export default function Hero() {
             </Link>
 
             <Link
-              href="/contact"
+              href={localePath(locale, "/contact")}
               className="inline-flex items-center justify-center gap-3 rounded-full border border-blue-300 bg-white/70 px-8 py-4 text-sm font-semibold text-blue-950 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 hover:bg-white"
             >
-              Let's Talk
+              {text.talk}
               <span>↗</span>
             </Link>
           </div>
@@ -134,12 +134,12 @@ export default function Hero() {
           >
             <span className="flex items-center gap-2">
               <span className="font-bold text-blue-700">✓</span>
-              Reliable Distribution
+              {text.reliable}
             </span>
 
             <span className="flex items-center gap-2">
               <span className="font-bold text-blue-700">✓</span>
-              Quality Products
+              {text.quality}
             </span>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function Hero() {
           <span className="mx-auto block h-2 w-1 rounded-full bg-blue-700 animate-bounce" />
         </span>
         <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">
-          Scroll
+          {text.scroll}
         </span>
       </div>
 

@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
+import { useLocale } from "@/components/LocaleProvider";
+import { localePath, translate } from "@/lib/i18n";
 
 type ProjectItem = {
   id: string;
@@ -14,6 +18,9 @@ export default function ProjectSection({
 }: {
   projects: ProjectItem[];
 }) {
+  const locale = useLocale();
+  const text = translate(locale).home;
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#eaf3ff] via-[#dcecff] to-[#c5e5ff] px-6 py-24 md:px-16 md:py-28 lg:px-24">
 
@@ -31,29 +38,28 @@ export default function ProjectSection({
               <div className="mb-5 inline-flex items-center gap-3 rounded-full border border-blue-200 bg-white/70 px-4 py-2 shadow-sm backdrop-blur-sm">
                 <span className="h-2 w-2 rounded-full bg-blue-600" />
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-800">
-                  Our Portfolio
+                  {text.projects}
                 </p>
               </div>
 
               <h2 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight text-[#101a30] md:text-6xl">
-                Work we are
+                {text.projectTitleLead}
                 <br />
                 <span className="bg-gradient-to-r from-blue-700 to-sky-500 bg-clip-text text-transparent">
-                  proud of.
+                  {text.projectTitleAccent}
                 </span>
               </h2>
 
               <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-600 md:text-lg">
-                Discover our projects, partnerships, and work that reflect
-                our commitment to quality and excellence.
+                {text.projectsDescription}
               </p>
             </div>
 
             <Link
-              href="/projects"
+              href={localePath(locale, "/projects")}
               className="group inline-flex w-fit items-center gap-4 rounded-full border border-blue-200 bg-white/80 px-6 py-3.5 text-sm font-semibold text-blue-800 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-600 hover:bg-blue-600 hover:text-white hover:shadow-lg hover:shadow-blue-600/20"
             >
-              View All Projects
+              {text.viewProjects}
               <span className="transition-transform duration-300 group-hover:translate-x-1.5">
                 →
               </span>
@@ -66,7 +72,7 @@ export default function ProjectSection({
           {projects.map((project, index) => (
             <Reveal key={project.id} delay={index * 120}>
               <Link
-                href="/projects"
+                href={localePath(locale, "/projects")}
                 className={`group block ${
                   index % 2 === 1 ? "md:mt-20" : ""
                 }`}
@@ -86,7 +92,7 @@ export default function ProjectSection({
                       <div className="text-center">
                         <span className="text-4xl text-blue-400">✦</span>
                         <p className="mt-3 text-sm font-medium text-blue-700">
-                          Project Preview
+                          {text.projectPreview}
                         </p>
                       </div>
                     </div>
@@ -97,7 +103,7 @@ export default function ProjectSection({
 
                   {/* Project Number */}
                   <div className="absolute left-5 top-5 rounded-full border border-white/50 bg-white/85 px-3.5 py-1.5 text-xs font-semibold tracking-wider text-blue-800 shadow-sm backdrop-blur-md">
-                    PROJECT {String(index + 1).padStart(2, "0")}
+                    {text.projectLabel} {String(index + 1).padStart(2, "0")}
                   </div>
 
                   {/* Arrow Button */}
@@ -110,7 +116,7 @@ export default function ProjectSection({
                 <div className="mt-6 flex items-start justify-between gap-4 px-1">
                   <div>
                     <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
-                      {project.category || "General"}
+                      {project.category || text.general}
                     </p>
 
                     <h3 className="text-xl font-semibold tracking-tight text-[#101a30] transition-colors duration-300 group-hover:text-blue-700 md:text-2xl">
@@ -137,10 +143,10 @@ export default function ProjectSection({
                 ✦
               </div>
               <h3 className="mt-6 text-xl font-semibold text-[#101a30]">
-                Projects Coming Soon
+                {text.emptyProjects}
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                We are preparing our portfolio. Check back soon for updates.
+                {text.emptyProjectsDescription}
               </p>
             </div>
           </Reveal>
